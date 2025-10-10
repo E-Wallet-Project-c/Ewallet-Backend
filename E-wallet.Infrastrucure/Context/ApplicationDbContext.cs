@@ -113,6 +113,13 @@ public partial class ApplicationDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("Profile_pkey");
 
             entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+
+            // Add UserId as foreign key
+            entity.HasOne(p => p.User)        
+                  .WithOne(u => u.Profile)     
+                  .HasForeignKey<Profile>(p => p.UserId) 
+                  .IsRequired(false)           
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Role>(entity =>
@@ -170,9 +177,6 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
 
-            entity.HasOne(d => d.Profile).WithMany(p => p.Users)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("Fk-ProfileId");
         });
 
         modelBuilder.Entity<UserBankAccount>(entity =>

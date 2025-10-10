@@ -18,7 +18,7 @@ public partial class User
 
     [StringLength(50)]
     public string Email { get; set; } = null!;
-
+    public Profile? Profile { get; set; }
     public bool IsActive { get; set; }
 
     [Column(TypeName = "timestamp without time zone")]
@@ -29,11 +29,13 @@ public partial class User
 
     [Column(TypeName = "timestamp without time zone")]
     public DateTime? UpdatedAt { get; set; }
+    public string OtpCode { get; set; } 
+    public DateTime? OtpExpiry { get; set; }
+    public bool IsVerified { get; set; }= false;
 
     [Column(TypeName = "character varying")]
     public string? Updatedby { get; set; }
 
-    public int? ProfileId { get; set; } =null!;
 
     [Column(TypeName = "character varying")]
     public string FullName { get; set; } = null!;
@@ -46,9 +48,7 @@ public partial class User
     [InverseProperty("User")]
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
-    [ForeignKey("ProfileId")]
-    [InverseProperty("Users")]
-    public virtual Profile Profile { get; set; } = null!;
+
 
     [InverseProperty("User")]
     public virtual ICollection<Session> Sessions { get; set; } = new List<Session>();

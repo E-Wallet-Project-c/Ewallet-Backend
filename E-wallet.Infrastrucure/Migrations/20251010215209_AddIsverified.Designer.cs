@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace E_wallet.Infrastrucure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251010201129_MakeProfileIdNullable")]
-    partial class MakeProfileIdNullable
+    [Migration("20251010215209_AddIsverified")]
+    partial class AddIsverified
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -309,8 +309,14 @@ namespace E_wallet.Infrastrucure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id")
                         .HasName("Profile_pkey");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.HasIndex(new[] { "Phone" }, "Unique-Values")
                         .IsUnique();
@@ -522,13 +528,20 @@ namespace E_wallet.Infrastrucure.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("OtpCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("OtpExpiry")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
-
-                    b.Property<int?>("ProfileId")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -538,8 +551,6 @@ namespace E_wallet.Infrastrucure.Migrations
 
                     b.HasKey("Id")
                         .HasName("User_pkey");
-
-                    b.HasIndex("ProfileId");
 
                     b.HasIndex(new[] { "Password", "Email" }, "Uniqe-Values")
                         .IsUnique();
@@ -737,6 +748,16 @@ namespace E_wallet.Infrastrucure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("E_wallet.Domain.Entities.Profile", b =>
+                {
+                    b.HasOne("E_wallet.Domain.Entities.User", "User")
+                        .WithOne("Profile")
+                        .HasForeignKey("E_wallet.Domain.Entities.Profile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("E_wallet.Domain.Entities.Session", b =>
                 {
                     b.HasOne("E_wallet.Domain.Entities.User", "User")
@@ -785,16 +806,6 @@ namespace E_wallet.Infrastrucure.Migrations
                     b.Navigation("SenderWallet");
                 });
 
-            modelBuilder.Entity("E_wallet.Domain.Entities.User", b =>
-                {
-                    b.HasOne("E_wallet.Domain.Entities.Profile", "Profile")
-                        .WithMany("Users")
-                        .HasForeignKey("ProfileId")
-                        .HasConstraintName("Fk-ProfileId");
-
-                    b.Navigation("Profile");
-                });
-
             modelBuilder.Entity("E_wallet.Domain.Entities.UserBankAccount", b =>
                 {
                     b.HasOne("E_wallet.Domain.Entities.VirtualBank", "Bank")
@@ -836,11 +847,6 @@ namespace E_wallet.Infrastrucure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("E_wallet.Domain.Entities.Profile", b =>
-                {
-                    b.Navigation("Users");
-                });
-
             modelBuilder.Entity("E_wallet.Domain.Entities.Role", b =>
                 {
                     b.Navigation("Admins");
@@ -856,6 +862,8 @@ namespace E_wallet.Infrastrucure.Migrations
                     b.Navigation("AuditLogs");
 
                     b.Navigation("Notifications");
+
+                    b.Navigation("Profile");
 
                     b.Navigation("Sessions");
 
