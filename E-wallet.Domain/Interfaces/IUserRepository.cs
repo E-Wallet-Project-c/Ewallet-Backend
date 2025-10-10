@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace E_wallet.Domain.Interfaces
 {
-    //public interface IUserRepository
-    //{
-    //    User createUser(User user);
-    //}
+    public interface IUserRepository
+    {
+        Task<User?> GetByEmailAsync(string email);
+        Task<User> AddAsync(User user);
+    }
 }
