@@ -12,6 +12,7 @@ namespace E_wallet.Application.Dtos.Request
        
         public string FullName { get; set; } = null!;
         public string Email { get; set; } = null!;
+        public int ProfileId { get; set; } 
 
         public string Password { get; set; } = null!;
 
