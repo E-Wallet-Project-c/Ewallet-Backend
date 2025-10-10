@@ -28,8 +28,10 @@ namespace E_wallet.Application.Services
             {
                 return UserMapper.Failure("Email is already registered.");
             }
+            //generate OTP 
 
-       
+
+            // Send otp code via email
             var user = await _userRepository.AddAsync(UserMapper.toEntityRegister(dto));
             return UserMapper.toResponseRegister(user);
         }

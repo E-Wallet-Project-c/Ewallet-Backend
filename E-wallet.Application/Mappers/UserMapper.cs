@@ -17,7 +17,6 @@ namespace E_wallet.Application.Mappers
                 FullName = dto.FullName,
                 Email = dto.Email,
                 Password = dto.Password,
-                ProfileId=dto.ProfileId,
                 IsActive = true,
             };
         }
