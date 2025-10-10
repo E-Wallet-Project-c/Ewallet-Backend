@@ -8,31 +8,39 @@ using System.Threading.Tasks;
 
 namespace E_wallet.Application.Mappers
 {
-    public class UserMapper
+    public static class UserMapper
     {
-        //public User toEntity(UserRegisterRequest dto)
-        //{
-        //    return new User
-        //    {
-        //        FullName = dto.FullName,
-        //        Email = dto.Email,
-        //        Password = dto.Password,
-        //        IsActive = true,
-                
-        //    };
-        //}
+        public static User toEntityRegister(UserRegisterRequest dto)
+        {
+            return new User
+            {
+                FullName = dto.FullName,
+                Email = dto.Email,
+                Password = dto.Password,
+                IsActive = true,
+            };
+        }
 
-        //public UserResponse toResponse(User entity)
-        //{
-        //    return new UserResponse
-        //    {
-        //        Id = entity.Id,
-        //        FullName = entity.FullName,
-        //        Email = entity.Email,
-        //        IsActive = entity.IsActive,
-        //        CreatedAt = entity.CreatedAt,
-        //        UpdatedAt = entity.UpdatedAt
-        //    };
-        //}
+        public static UserRegisterResponse toResponseRegister(User entity)
+        {
+            return new UserRegisterResponse
+            {
+                Id = entity.Id,
+                FullName = entity.FullName,
+                Email = entity.Email,
+                //IsActive = entity.IsActive,
+                CreatedAt = entity.CreatedAt,
+                UpdatedAt = entity.UpdatedAt
+            };
+        }
+
+        public static UserRegisterResponse Failure(string message)
+        {
+            return new UserRegisterResponse
+            {
+                Success = false,
+                Message = message
+            };
+        }
     }
 }
