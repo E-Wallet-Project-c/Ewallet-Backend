@@ -33,7 +33,7 @@ public partial class User
     [Column(TypeName = "character varying")]
     public string? Updatedby { get; set; }
 
-    public int ProfileId { get; set; }
+    public int? ProfileId { get; set; } =null!;
 
     [Column(TypeName = "character varying")]
     public string FullName { get; set; } = null!;

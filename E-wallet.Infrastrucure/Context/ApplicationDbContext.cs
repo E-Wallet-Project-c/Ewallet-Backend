@@ -50,6 +50,8 @@ public partial class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Ignore<Limit>();
+
         modelBuilder.Entity<Admin>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Admin_pkey");
