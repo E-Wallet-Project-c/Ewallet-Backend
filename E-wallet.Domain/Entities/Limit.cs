@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_wallet.Domain.Entities;
 
+[NotMapped]
 [Table("Limit")]
 public partial class Limit
 {
