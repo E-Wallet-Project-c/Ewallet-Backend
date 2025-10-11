@@ -29,11 +29,19 @@ namespace E_wallet.Application.Services
                 return UserMapper.Failure("Email is already registered.");
             }
             //generate OTP 
+            var otpCode = new Random().Next(100000, 999999).ToString();
+            var otpExpiry = DateTime.UtcNow.AddMinutes(10);
+            //generate OTP 
+            User user = UserMapper.toEntityRegister(dto);
+            user.OtpCode = otpCode;
+            user.OtpExpiry = otpExpiry;
+            user.IsVerified = false;
 
+            user = await _userRepository.AddAsync(user);
+
+            return UserMapper.toResponseRegister(user);
 
             // Send otp code via email
-            var user = await _userRepository.AddAsync(UserMapper.toEntityRegister(dto));
-            return UserMapper.toResponseRegister(user);
         }
     }
 

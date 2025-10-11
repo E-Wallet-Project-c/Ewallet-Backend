@@ -11,5 +11,6 @@ namespace E_wallet.Application.Dtos.Request
         public DateOnly? DateOfBirth { get; set; }
         public string? Country { get; set; }
         public string? Phone { get; set; }
+        public int UserId { get; set; }
     }
 }
