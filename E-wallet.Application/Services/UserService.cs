@@ -1,8 +1,10 @@
 ﻿using E_wallet.Application.Dtos.Request;
 using E_wallet.Application.Interfaces;
 using E_wallet.Application.Mappers;
+using E_wallet.Domain.IHelpers;
 using E_wallet.Domain.Entities;
 using E_wallet.Domain.Interfaces;
+using E_wallet.Infrastrucure.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,10 +17,11 @@ namespace E_wallet.Application.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-
-        public UserService(IUserRepository userRepository)
+        private readonly IEmailHelper _emailHelper;
+        public UserService(IUserRepository userRepository, IEmailHelper mailingHelper)
         {
             _userRepository = userRepository;
+            _emailHelper = mailingHelper;
         }
 
         public async Task<UserRegisterResponse> RegisterUserAsync(UserRegisterRequest dto)
@@ -39,9 +42,10 @@ namespace E_wallet.Application.Services
 
             user = await _userRepository.AddAsync(user);
 
+            await _emailHelper.SendOtpEmailAsync(user.Email, user.OtpCode);
+
             return UserMapper.toResponseRegister(user);
 
-            // Send otp code via email
         }
     }
 

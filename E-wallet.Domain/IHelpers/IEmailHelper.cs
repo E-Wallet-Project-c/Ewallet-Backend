@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_wallet.Infrastrucure.Helpers
+namespace E_wallet.Domain.IHelpers
 {
-    internal class Class1
+    public interface IEmailHelper
     {
+        Task SendOtpEmailAsync(string email, string otp);
     }
 }

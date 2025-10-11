@@ -20,11 +20,13 @@
     </PackageReference>
     <PackageReference Include="Npgsql" Version="9.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="SendGrid" Version="9.29.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\E-wallet.Domain\E-wallet.Domain.csproj" />
+    <ProjectReference Include="..\E-wallet.Infrastrucure\E-wallet.Infrastrucure.csproj" />
   </ItemGroup>
 
 </Project>

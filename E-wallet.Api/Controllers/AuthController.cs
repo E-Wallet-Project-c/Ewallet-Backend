@@ -2,6 +2,7 @@
 using E_wallet.Application.Interfaces;
 using E_wallet.Application.Services;
 using E_wallet.Domain.Entities;
+using E_wallet.Infrastrucure.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,6 +26,7 @@ namespace E_wallet.Api.Controllers
 
         //}
 
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterRequest registerDto)
         {
