@@ -10,7 +10,7 @@ namespace E_wallet.Application.Mappers
 {
     public static class UserMapper
     {
-        public static User toEntityRegister(UserRegisterRequest dto)
+        public static User toEntityRegister(UserRegisterRequest dto )
         {
             return new User
             {
@@ -18,6 +18,9 @@ namespace E_wallet.Application.Mappers
                 Email = dto.Email,
                 Password = dto.Password,
                 IsActive = true,
+
+
+
             };
         }
 
@@ -31,6 +34,8 @@ namespace E_wallet.Application.Mappers
                 //IsActive = entity.IsActive,
                 CreatedAt = entity.CreatedAt,
                 UpdatedAt = entity.UpdatedAt
+
+                
             };
         }
 

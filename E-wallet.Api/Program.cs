@@ -1,5 +1,6 @@
 
 using E_wallet.Application.Interfaces;
+using E_wallet.Application.Mappers;
 using E_wallet.Application.Services;
 using E_wallet.Application.Validators;
 using E_wallet.Domain.Context;
@@ -22,9 +23,15 @@ namespace E_wallet.Api
             builder.Services.AddConnections();
             builder.Services.AddValidatorsFromAssembly(typeof(RegisterRequestValidator).Assembly, includeInternalTypes: true);
             builder.Services.AddValidatorsFromAssembly(typeof(UserProfileRequestValidator).Assembly, includeInternalTypes: true);
+            //mapper 
+            builder.Services.AddSingleton<ProfileMapper>();
             // Register your services here:
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            //Create Profile service and repository
+            builder.Services.AddScoped<IProfileService, ProfileService>();
+            builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+          
 
             builder.Services.AddControllers();
             builder.Services.AddOpenApi();
