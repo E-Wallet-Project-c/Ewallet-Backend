@@ -17,7 +17,7 @@ namespace E_wallet.Api.Controllers
             _profileService = profileService;
         }
 
-        [HttpPost ("Create-Profile")]
+        [HttpPost("Create-Profile")]
         public async Task<ActionResult> Create([FromBody] UserProfileRequest dto)
         {
             try
@@ -52,7 +52,12 @@ namespace E_wallet.Api.Controllers
                 return NotFound();
             }
         }
-    }
-    
-}
+      [HttpGet ("Get-All-Profiles")]
+        public async Task<ActionResult<IEnumerable<UserProfileResponse>>> GetAll()
+        {
+            var profiles = await _profileService.GetAllAsync();
+            return Ok(profiles);
+        }
+
+    } }
 

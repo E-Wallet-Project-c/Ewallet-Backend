@@ -20,6 +20,6 @@ namespace E_wallet.Application.Interfaces
 
         Task<UserProfileResponse> UpdateProfileAsync(int id, UserProfileRequest dto);//done 
 
-        Task<IEnumerable<Profile>> GetAllAsync();
+        Task<IEnumerable<UserProfileResponse>> GetAllAsync();// done
     }
 }
