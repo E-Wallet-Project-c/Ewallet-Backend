@@ -26,13 +26,7 @@ namespace E_wallet.Api.Controllers
 
         //}
 
-        [HttpPost("send-Email")]
-        public async Task<IActionResult> SendEmail([FromBody] string email)
-        {
-            await MailingHelper.SendOtpEmail();
-            return Ok(new { message = "Email sent successfully" });
-        }
-
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterRequest registerDto)
         {

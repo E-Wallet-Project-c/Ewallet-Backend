@@ -5,6 +5,7 @@ using E_wallet.Application.Services;
 using E_wallet.Application.Validators;
 using E_wallet.Domain.Context;
 using E_wallet.Domain.Interfaces;
+using E_wallet.Infrastrucure.Helpers;
 using E_wallet.Infrastrucure.Repositories;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,8 @@ namespace E_wallet.Api
             // Register your services here:
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            // Add MailingHelper as a singleton service
+            builder.Services.AddScoped<E_wallet.Domain.IHelpers.IEmailHelper, MailingHelper>();
             //Create Profile service and repository
             builder.Services.AddScoped<IProfileService, ProfileService>();
             builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
