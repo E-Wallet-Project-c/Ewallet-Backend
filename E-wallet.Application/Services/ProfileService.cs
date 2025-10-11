@@ -41,13 +41,21 @@ namespace E_wallet.Application.Services
 
         }
 
-        public Task<IEnumerable<Profile>> GetAllAsync()
+        public async Task<IEnumerable<UserProfileResponse>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var profiles = await _profileRepository.GetAllAsync(); 
+            var responseList = new List<UserProfileResponse>();
+
+            foreach (var profile in profiles)
+            {
+                responseList.Add(_mapper.toResponse(profile));
+            }
+
+            return responseList;
         }
 
         public async Task<Profile?> GetByIdAsync(int id)
-        {//
+        {
             var profile = await _profileRepository.GetByIdAsync(id);
             return profile;
 
