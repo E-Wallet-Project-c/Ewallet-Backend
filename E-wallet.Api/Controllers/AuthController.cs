@@ -2,6 +2,7 @@
 using E_wallet.Application.Interfaces;
 using E_wallet.Application.Services;
 using E_wallet.Domain.Entities;
+using E_wallet.Infrastrucure.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +25,13 @@ namespace E_wallet.Api.Controllers
         //{
 
         //}
+
+        [HttpPost("send-Email")]
+        public async Task<IActionResult> SendEmail([FromBody] string email)
+        {
+            await MailingHelper.SendOtpEmail();
+            return Ok(new { message = "Email sent successfully" });
+        }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterRequest registerDto)
