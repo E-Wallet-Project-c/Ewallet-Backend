@@ -8,6 +8,7 @@ using E_wallet.Domain.Interfaces;
 using E_wallet.Infrastrucure.Helpers;
 using E_wallet.Infrastrucure.Repositories;
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -22,6 +23,9 @@ namespace E_wallet.Api
              options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddConnections();
+
+            builder.Services.AddFluentValidationAutoValidation();
+
             builder.Services.AddValidatorsFromAssembly(typeof(RegisterRequestValidator).Assembly, includeInternalTypes: true);
             builder.Services.AddValidatorsFromAssembly(typeof(UserProfileRequestValidator).Assembly, includeInternalTypes: true);
             //mapper 
