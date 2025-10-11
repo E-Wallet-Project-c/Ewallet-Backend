@@ -16,7 +16,8 @@ namespace E_wallet.Application.Validators
             RuleFor(x => x.FullName)
                 .NotEmpty().WithMessage("Full name is required.")
                 .MaximumLength(50).WithMessage("The name must not exceed 50 character")
-                .MinimumLength(3).WithMessage("The name should be at least 3 character");
+                .MinimumLength(3).WithMessage("The name should be at least 3 character")
+                .Matches(@"^[a-zA-Z\s]+$").WithMessage("Full name must contain only letters and spaces."); ;
 
 
             // Email validation
