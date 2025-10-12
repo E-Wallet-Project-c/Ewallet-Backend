@@ -19,8 +19,6 @@ namespace E_wallet.Application.Mappers
                 Password = dto.Password,
                 IsActive = true,
 
-
-
             };
         }
 

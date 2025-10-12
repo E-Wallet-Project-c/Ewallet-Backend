@@ -11,5 +11,7 @@ namespace E_wallet.Domain.Interfaces
     {
         Task<User?> GetByEmailAsync(string email);
         Task<User> AddAsync(User user);
+        Task<User?> GetByIdAsync(int id);
+        Task UpadteChangesAsync(User user);
     }
 }
