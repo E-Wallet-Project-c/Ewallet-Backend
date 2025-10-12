@@ -10,5 +10,7 @@ namespace E_wallet.Application.Interfaces
     public interface IUserService
     {
         Task<UserRegisterResponse> RegisterUserAsync(UserRegisterRequest dto);
+        Task<UserLoginResponse> LoginUserAsync(UserLoginRequest dto);
+
     }
 }

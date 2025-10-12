@@ -28,6 +28,9 @@ namespace E_wallet.Application.Services
             {
                 return UserMapper.Failure("Email is already registered.");
             }
+            //hashing the password
+            //dto.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
             //generate OTP 
             var otpCode = new Random().Next(100000, 999999).ToString();
             var otpExpiry = DateTime.UtcNow.AddMinutes(10);
@@ -39,10 +42,26 @@ namespace E_wallet.Application.Services
 
             user = await _userRepository.AddAsync(user);
 
+            // Send otp code via email
             return UserMapper.toResponseRegister(user);
 
-            // Send otp code via email
+            
         }
+
+        public async Task<UserLoginResponse> LoginUserAsync(UserLoginRequest dto)
+        {
+            //check email if exist 
+            var existingUser = await _userRepository.GetByEmailAsync(dto.Email);
+            //!BCrypt.Net.BCrypt.Verify(dto.Password, existingUser.Password) 
+            if (existingUser == null || !string.Equals(dto.Password, existingUser.Password))
+            {
+                return UserMapper.FailureLogin("Invalid email or password");
+            }
+
+            return UserMapper.toResponseLogin(existingUser);
+        }
+
+            
     }
 
 }
