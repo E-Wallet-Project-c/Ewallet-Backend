@@ -1,4 +1,5 @@
-﻿using System;
+﻿using E_wallet.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,4 +11,5 @@ namespace E_wallet.Application.Interfaces.IHelpers
     {
         Task SendOtpEmailAsync(string email, string otp);
     }
+    
 }
