@@ -45,5 +45,22 @@ namespace E_wallet.Application.Mappers
                 Message = message
             };
         }
+
+        public static UserLoginResponse toResponseLogin(User entity)
+        {
+            return new UserLoginResponse
+            {
+                Id = entity.Id,
+            };
+        }
+
+        public static UserLoginResponse FailureLogin(string message)
+        {
+            return new UserLoginResponse
+            {
+                Success = false,
+                Message = message
+            };
+        }
     }
 }

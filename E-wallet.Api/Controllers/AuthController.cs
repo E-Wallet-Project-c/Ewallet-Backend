@@ -31,12 +31,41 @@ namespace E_wallet.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterRequest registerDto)
         {
-            var result = await _userService.RegisterUserAsync(registerDto);
+            try
+            {
+                var result = await _userService.RegisterUserAsync(registerDto);
 
-            if (!result.Success)
+                if (!result.Success)
+                    return BadRequest(new { message = result.Message });
+
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginRequest loginDto)
+        {
+            try
+            {
+                var result = await _userService.LoginUserAsync(loginDto);
+
+                if (!result.Success)
                 return BadRequest(new { message = result.Message });
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
 
         [HttpPost("ForgetPassword")]
