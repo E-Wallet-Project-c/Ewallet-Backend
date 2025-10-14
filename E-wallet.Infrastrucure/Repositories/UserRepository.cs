@@ -12,7 +12,7 @@ namespace E_wallet.Infrastrucure.Repositories
 {
     public class UserRepository : IUserRepository
     {
-       
+
         private readonly ApplicationDbContext _context;
         public UserRepository(ApplicationDbContext context)
         {
@@ -25,9 +25,9 @@ namespace E_wallet.Infrastrucure.Repositories
         }
         public async Task<User?> GetByIdAsync(int id)
         {
-            return await _context.Users.FirstOrDefaultAsync(U=> U.Id == id);
+            return await _context.Users.FirstOrDefaultAsync(U => U.Id == id);
         }
-        
+
 
         public async Task<User> AddAsync(User user)
         {
@@ -41,7 +41,8 @@ namespace E_wallet.Infrastrucure.Repositories
             await _context.SaveChangesAsync();
         }
 
-     
+
 
     }
+
 }

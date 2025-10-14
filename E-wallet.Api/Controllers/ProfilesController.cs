@@ -1,12 +1,14 @@
 ﻿using E_wallet.Application.Dtos.Request;
 using E_wallet.Application.Dtos.Response;
 using E_wallet.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_wallet.Api.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "User")]
     [ApiController]
     public class ProfilesController : ControllerBase
     {
@@ -18,6 +20,7 @@ namespace E_wallet.Api.Controllers
         }
 
         [HttpPost("Create-Profile")]
+        
         public async Task<ActionResult> Create([FromBody] UserProfileRequest dto)
         {
             try

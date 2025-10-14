@@ -1,4 +1,5 @@
 ﻿using E_wallet.Application.Dtos.Request;
+using E_wallet.Application.Dtos.Response;
 using E_wallet.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace E_wallet.Application.Mappers
 {
     public static class UserMapper
     {
-        public static User toEntityRegister(UserRegisterRequest dto )
+        public static User toEntityRegister(UserRegisterRequest dto)
         {
             return new User
             {
@@ -33,7 +34,7 @@ namespace E_wallet.Application.Mappers
                 CreatedAt = entity.CreatedAt,
                 UpdatedAt = entity.UpdatedAt
 
-                
+
             };
         }
 
@@ -63,4 +64,5 @@ namespace E_wallet.Application.Mappers
             };
         }
     }
+    
 }
