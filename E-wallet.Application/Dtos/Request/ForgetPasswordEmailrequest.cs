@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_wallet.Application.Dtos
+namespace E_wallet.Application.Dtos.Request
 {
-    internal class Class1
+    public class ForgetPasswordEmailrequest
     {
+        public int UserId { get; set; }
     }
 }
