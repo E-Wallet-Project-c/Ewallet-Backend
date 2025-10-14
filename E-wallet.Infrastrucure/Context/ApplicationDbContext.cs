@@ -36,7 +36,7 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<Transfer> Transfers { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<User> Users { get; set; } = null!;
 
     public virtual DbSet<UserBankAccount> UserBankAccounts { get; set; }
 

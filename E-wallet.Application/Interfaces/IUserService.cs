@@ -16,6 +16,8 @@ namespace E_wallet.Application.Interfaces
         Task<UserRegisterResponse> GenaratenewPasswordAsync(NewPasswordrequest dto);
 
         Task<UserLoginResponse> LoginUserAsync(UserLoginRequest dto);
+        Task<string> VerifyOtpAsync(VerifyOtpRequest dto);
+
 
     }
 }
