@@ -13,7 +13,7 @@ public partial class User
     [Key]
     public int Id { get; set; }
 
-    [StringLength(50)]
+    [StringLength(500)]
     public string Password { get; set; } = null!;
 
     [StringLength(50)]
@@ -29,7 +29,7 @@ public partial class User
 
     [Column(TypeName = "timestamp without time zone")]
     public DateTime? UpdatedAt { get; set; }
-    public string OtpCode { get; set; } 
+    public string? OtpCode { get; set; } 
     public DateTime? OtpExpiry { get; set; }
     public bool IsVerified { get; set; }= false;
 

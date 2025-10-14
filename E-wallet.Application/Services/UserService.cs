@@ -114,7 +114,33 @@ namespace E_wallet.Application.Services
             return UserMapper.toResponseLogin(existingUser);
         }
 
+      public async   Task <string> VerifyOtpAsync(VerifyOtpRequest dto)
+        {
+            var user = await _userRepository.GetByIdAsync(dto.UserId);
+            if (user == null)
+                return "User not found";
 
+            if (user.OtpCode != dto.OtpCode)
+                return "Invalid OTP";
+
+            if (user.OtpExpiry == null || user.OtpExpiry < DateTime.UtcNow)
+                return "OTP expired";
+
+            if (dto.Purpose == "register")
+            {
+                user.IsVerified = true;
+                user.OtpCode = null;
+                user.OtpExpiry = null;
+                await _userRepository.UpadteChangesAsync(user);
+                return "Registration verified successfully";
+            }
+            else if (dto.Purpose == "resetPassword")
+            {
+                return "OTP verified successfully, you can reset your password";
+            }
+
+            return "Invalid purpose";
+        }
     }
 
 }

@@ -91,11 +91,21 @@ namespace E_wallet.Api.Controllers
             {
                 return Ok(result);
             }
-              catch (Exception)
+            catch (Exception)
             {
 
                 throw;
-            } 
+            }
         }
+            [HttpPost("verify-otp")]
+            public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequest dto)
+            {
+                var result = await _userService.VerifyOtpAsync(dto);
+                if (result.Contains("Invalid") || result.Contains("expired") || result.Contains("not found"))
+                    return BadRequest(new { message = result });
+
+                return Ok(new { message = result });
+            }
+        
     } 
 }
