@@ -1,8 +1,9 @@
-﻿using System;
+﻿using E_wallet.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace E_wallet.Domain.Entities;
 
@@ -16,8 +17,11 @@ public partial class Transaction
 
     public double Amount { get; set; }
 
-    [StringLength(50)]
-    public string Type { get; set; } = null!;
+    [Column(TypeName = "character varying")]
+    public TransactionType Type { get; set; }
+
+    [Column(TypeName = "character varying")]
+    public TransactionAction Action { get; set; } = TransactionAction.TopUp;
 
     public int BeneficiaryId { get; set; }
 
