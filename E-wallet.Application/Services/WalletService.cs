@@ -1,5 +1,7 @@
 ﻿using E_wallet.Application.Dtos.Response;
 using E_wallet.Application.Interfaces;
+using E_wallet.Application.Mappers;
+using E_wallet.Domain.Entities;
 using E_wallet.Domain.Enums;
 using E_wallet.Domain.Interfaces;
 using System;
@@ -36,6 +38,36 @@ namespace E_wallet.Application.Services
                 LastUpdated = wallet.UpdatedAt ?? wallet.CreatedAt ?? DateTime.UtcNow
             };
 
-    }
+        }
+
+        public async Task<WalletCreationResponse> CreateFirstWallet(int UserId)
+        {
+            //get all wallets by user id
+            //checking if user already has a wallet
+            var wallet = await _walletRepo.GetWalletsByUserId(UserId);
+            bool IsDefault=true;
+            if (wallet.Count!=0)
+            {
+                IsDefault = false;
+            }
+                var savedWallet= await  _walletRepo.CreateWallet(new Domain.Entities.Wallet
+                {
+                    UserId = UserId,
+                    Currency = "JD",
+                    IsActive = true,
+                    IsDeleted = false,
+                    IsDefaultWallet= IsDefault,
+                    CreatedAt = DateTime.Now,
+                    CreatedBy=null
+                });
+                return new WalletCreationResponse
+                {
+                    WalletId = savedWallet.Id,
+                    userId = savedWallet.UserId,
+                    Message = "Wallet created successfully."
+                };
+           
+        }
+
     }
 }
