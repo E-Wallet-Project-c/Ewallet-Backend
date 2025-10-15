@@ -31,5 +31,16 @@ namespace E_wallet.Infrastrucure.Repositories
                 .Where(t => t.WalletId == walletId && t.IsActive == true)
                 .ToListAsync();
         }
+        public async Task <List<Wallet>> GetWalletsByUserId(int userId)
+        {
+            //getting all wallets by user id (Async programming)
+            return await _context.Wallets.Where(W =>W.UserId==userId).ToListAsync();
+        }
+        public async Task<Wallet> CreateWallet(Wallet wallet)
+        {
+           await _context.Wallets.AddAsync(wallet);
+           await _context.SaveChangesAsync();
+            return wallet;
+        }
     }
 }
