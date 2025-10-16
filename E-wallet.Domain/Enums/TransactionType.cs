@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_wallet.Application.Dtos.Request
+namespace E_wallet.Domain.Enums
 {
-    public class ForgetPasswordEmailrequest
+    public enum TransactionType
     {
-        public int UserId { get; set; }
+        Credit,
+        Debit
     }
+
 }

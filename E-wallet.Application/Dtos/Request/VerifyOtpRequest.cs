@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace E_wallet.Application.Dtos.Request
 {
-    public class ForgetPasswordEmailrequest
+    public  class VerifyOtpRequest
     {
         public int UserId { get; set; }
+        public string OtpCode { get; set; }
+        public string Purpose { get; set; }
     }
 }

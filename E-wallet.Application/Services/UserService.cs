@@ -50,8 +50,32 @@ namespace E_wallet.Application.Services
 
             await _emailHelper.SendOtpEmailAsync(user.Email, user.OtpCode);
 
+           return UserMapper.toResponseRegister(user);
+        }
+
+        
+        public async Task<UserRegisterResponse> GenaratenewPasswordAsync(NewPasswordrequest dto)
+        {
+            User user = await _userRepository.GetByIdAsync(dto.id);
+            if (user == null)
+            {
+                return UserMapper.Failure("User does not exist");
+            }
+            if (user.Password==dto.newPassword)
+            {
+                return UserMapper.Failure("The new password must be different form the old password");
+            }
+            user.Password = dto.newPassword;
+           
+            await _userRepository.UpadteChangesAsync(user);
+            return UserMapper.toResponseRegister(user);
+        
+
+
+            // Send otp code via email
             return UserMapper.toResponseRegister(user);
 
+            
         }
         public async Task<UserRegisterResponse> ForgetPasswordAsync(ForgetPasswordEmailrequest dto)
         {
@@ -75,29 +99,7 @@ namespace E_wallet.Application.Services
         }
 
 
-        public async Task<UserRegisterResponse> GenaratenewPasswordAsync(NewPasswordrequest dto)
-        {
-            User user = await _userRepository.GetByIdAsync(dto.id);
-            if (user == null)
-            {
-                return UserMapper.Failure("User does not exist");
-            }
-            if (user.Password == dto.newPassword)
-            {
-                return UserMapper.Failure("The new password must be different form the old password");
-            }
-            user.Password = dto.newPassword;
-
-            await _userRepository.UpadteChangesAsync(user);
-            return UserMapper.toResponseRegister(user);
-
-
-
-            // Send otp code via email
-            return UserMapper.toResponseRegister(user);
-
-
-        }
+        
 
         public async Task<UserLoginResponse> LoginUserAsync(UserLoginRequest dto)
         {
@@ -112,7 +114,33 @@ namespace E_wallet.Application.Services
             return UserMapper.toResponseLogin(existingUser);
         }
 
+      public async   Task <string> VerifyOtpAsync(VerifyOtpRequest dto)
+        {
+            var user = await _userRepository.GetByIdAsync(dto.UserId);
+            if (user == null)
+                return "User not found";
 
+            if (user.OtpCode != dto.OtpCode)
+                return "Invalid OTP";
+
+            if (user.OtpExpiry == null || user.OtpExpiry < DateTime.UtcNow)
+                return "OTP expired";
+
+            if (dto.Purpose == "register")
+            {
+                user.IsVerified = true;
+                user.OtpCode = null;
+                user.OtpExpiry = null;
+                await _userRepository.UpadteChangesAsync(user);
+                return "Registration verified successfully";
+            }
+            else if (dto.Purpose == "resetPassword")
+            {
+                return "OTP verified successfully, you can reset your password";
+            }
+
+            return "Invalid purpose";
+        }
     }
 
 }

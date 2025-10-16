@@ -3,6 +3,7 @@ using System;
 using E_wallet.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace E_wallet.Infrastrucure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251014210824_UpdateUserPasswordAndOtpV2")]
+    partial class UpdateUserPasswordAndOtpV2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -397,10 +400,6 @@ namespace E_wallet.Infrastrucure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasColumnType("character varying");
-
                     b.Property<double>("Amount")
                         .HasColumnType("double precision");
 
@@ -422,7 +421,8 @@ namespace E_wallet.Infrastrucure.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("character varying");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -464,7 +464,7 @@ namespace E_wallet.Infrastrucure.Migrations
                     b.Property<double?>("Fee")
                         .HasColumnType("double precision");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<bool?>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true);
@@ -476,7 +476,6 @@ namespace E_wallet.Infrastrucure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasColumnType("character varying");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -654,6 +653,9 @@ namespace E_wallet.Infrastrucure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
+                    b.Property<double?>("Ballance")
+                        .HasColumnType("double precision");
+
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
@@ -669,9 +671,6 @@ namespace E_wallet.Infrastrucure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true);
-
-                    b.Property<bool>("IsDefaultWallet")
-                        .HasColumnType("boolean");
 
                     b.Property<bool?>("IsDeleted")
                         .ValueGeneratedOnAdd()

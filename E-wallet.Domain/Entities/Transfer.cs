@@ -1,8 +1,9 @@
-﻿using System;
+﻿using E_wallet.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace E_wallet.Domain.Entities;
 
@@ -19,11 +20,11 @@ public partial class Transfer
     public int Amount { get; set; }
 
     [Column(TypeName = "character varying")]
-    public string? Status { get; set; }
+    public TransferStatus Status { get; set; } = TransferStatus.Pending;
 
     public double? Fee { get; set; }
 
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
 
     [Column(TypeName = "timestamp without time zone")]
     public DateTime? CreatedAt { get; set; }

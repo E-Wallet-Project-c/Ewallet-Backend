@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace E_wallet.Application.Dtos.Response
 {
-    public class UserLoginResponse
+     public class WalletCreationResponse
     {
-        public int Id { get; set; }
-        public bool Success { get; set; } = true;
+        public int userId { get; set; }
+        public int WalletId { get; set; }
         public string? Message { get; set; }
     }
+
 }

@@ -41,7 +41,11 @@ namespace E_wallet.Api
             //Create Profile service and repository
             builder.Services.AddScoped<IProfileService, ProfileService>();
             builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+            // Repository for wallet
+            builder.Services.AddScoped<IWalletRepository, WalletRepository>();
 
+            // Service for wallet
+            builder.Services.AddScoped<IWalletService, WalletService>();
             //Jwt Register
             builder.Services.AddScoped<IJwtService, JwtService>();  
 
