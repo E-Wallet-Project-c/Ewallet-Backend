@@ -26,7 +26,7 @@ namespace E_wallet.Api.Controllers
             try
             {
                 var response = await _profileService.CreateProfileAsync(dto);
-                return CreatedAtAction(nameof(GetById), new { id = response.id }, response);
+                return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
             }
             catch (InvalidOperationException ex)
             {
@@ -62,5 +62,18 @@ namespace E_wallet.Api.Controllers
             return Ok(profiles);
         }
 
-    } }
+        [HttpGet("GetProfileByUserId{UserId}")]
+        public async Task<ActionResult<UserProfileResponse>> GetProfileByUserId(int UserId)
+        {
+            var response = await _profileService.GetByUserIdAsync(UserId);
+            if(response==null)
+            {
+                return NotFound(new { message = "No profile found for this user." });
+            }
+            return Ok(response);
+        }
+
+
+    } 
+}
 

@@ -10,7 +10,8 @@ namespace E_wallet.Application.Interfaces
     public interface IWalletService
     {
         Task<WalletBalanceResponseDto?> GetWalletBalanceAsync(int walletId);
-        Task<WalletCreationResponse> CreateFirstWallet(int UserId);
+        Task<WalletResponse> CreateWallet(int UserId);
+        Task<List<WalletResponse>> GetUserWallets(int UserId);
     }
 
 }

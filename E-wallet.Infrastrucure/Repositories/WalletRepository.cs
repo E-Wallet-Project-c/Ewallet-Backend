@@ -31,10 +31,12 @@ namespace E_wallet.Infrastrucure.Repositories
                 .Where(t => t.WalletId == walletId && t.IsActive == true)
                 .ToListAsync();
         }
-        public async Task <List<Wallet>> GetWalletsByUserId(int userId)
+        public async Task<List<Wallet>> GetWalletsByUserId(int userId)
         {
-            //getting all wallets by user id (Async programming)
-            return await _context.Wallets.Where(W =>W.UserId==userId).ToListAsync();
+            return await _context.Wallets
+                                 .AsNoTracking()         // read-only mode = faster & lighter
+                                 .Where(w => w.UserId == userId)
+                                 .ToListAsync();
         }
         public async Task<Wallet> CreateWallet(Wallet wallet)
         {

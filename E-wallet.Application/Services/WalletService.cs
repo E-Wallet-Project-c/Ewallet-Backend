@@ -40,7 +40,7 @@ namespace E_wallet.Application.Services
 
         }
 
-        public async Task<WalletCreationResponse> CreateFirstWallet(int UserId)
+        public async Task<WalletResponse> CreateWallet(int UserId)
         {
             //get all wallets by user id
             //checking if user already has a wallet
@@ -50,7 +50,7 @@ namespace E_wallet.Application.Services
             {
                 IsDefault = false;
             }
-                var savedWallet= await  _walletRepo.CreateWallet(new Domain.Entities.Wallet
+                var savedWallet= await  _walletRepo.CreateWallet(new Wallet
                 {
                     UserId = UserId,
                     Currency = "JD",
@@ -60,13 +60,35 @@ namespace E_wallet.Application.Services
                     CreatedAt = DateTime.Now,
                     CreatedBy=null
                 });
-                return new WalletCreationResponse
+                return new WalletResponse
                 {
                     WalletId = savedWallet.Id,
                     userId = savedWallet.UserId,
                     Message = "Wallet created successfully."
                 };
            
+        }
+       public async Task<List<WalletResponse>> GetUserWallets (int UserId)
+        {
+           
+            //getting all wallets by user id
+            var wallets = await _walletRepo.GetWalletsByUserId(UserId);
+            if (wallets.Count == 0)
+            {
+                return new List<WalletResponse>();
+            }
+            //transforming from Wallet entity to response DTO and returning the list
+            return wallets.Select(wallet => new WalletResponse
+            {
+                WalletId = wallet.Id,
+                userId = wallet.UserId,
+                Currency = wallet.Currency,
+                IsDefaultWallet = wallet.IsDefaultWallet,
+                IsDeleted = wallet.IsDeleted,
+                IsActive = wallet.IsActive,
+                UpdatedAt = wallet.UpdatedAt,
+                CreatedAt = wallet.CreatedAt
+            }).ToList();
         }
 
     }

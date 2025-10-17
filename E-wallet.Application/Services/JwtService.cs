@@ -89,6 +89,7 @@ namespace E_wallet.Application.Services
             var expires = DateTime.UtcNow.AddMinutes(int.Parse(jwtSettings["tokenExpirationInMinutes"]!));
             var key = (jwtSettings["secretKey"]!);
 
+
             var claims = new List<Claim>
             {
                 new (JwtRegisteredClaimNames.Sub, request.UserId.ToString()),
