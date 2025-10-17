@@ -15,7 +15,10 @@ namespace E_wallet.Application.Interfaces
         Task<UserRegisterResponse> ForgetPasswordAsync(ForgetPasswordEmailrequest dto);
         Task<UserRegisterResponse> GenaratenewPasswordAsync(NewPasswordrequest dto);
 
-        Task<UserLoginResponse> LoginUserAsync(UserLoginRequest dto);
+        Task<Result<AuthResponse>> RefreshTokenAsync(RefreshTokenRequest refreshRequest);
+        Task<Result<AuthResponse>> LoginAsync(UserLoginRequest dto);
+        Task<Result> LogoutAsync(RefreshTokenRequest refreshRequest);
+
         Task<string> VerifyOtpAsync(VerifyOtpRequest dto);
 
 

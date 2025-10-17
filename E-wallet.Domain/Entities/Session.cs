@@ -15,28 +15,29 @@ public partial class Session
     public int UserId { get; set; }
 
     [Column(TypeName = "character varying")]
-    public string AccessToken { get; set; } = null!;
-
-    [Column(TypeName = "character varying")]
     public string? RefreshToken { get; set; }
 
     public bool? IsActive { get; set; }
 
-    [Column(TypeName = "timestamp without time zone")]
+    [Column(TypeName = "timestamp with time zone")]
     public DateTime? CreatedAt { get; set; }
 
     [StringLength(50)]
-    public string? CraetedBy { get; set; }
+    public string? CreatedBy { get; set; }
 
-    [Column(TypeName = "timestamp without time zone")]
+    [Column(TypeName = "timestamp with time zone")]
     public DateTime? UpdatedAt { get; set; }
 
     [StringLength(50)]
     public string? UpdatedBy { get; set; }
 
-    public TimeOnly? ExpiresAt { get; set; }
+    [Column(TypeName = "timestamp with time zone")]
 
-    public TimeOnly? RefreshExpiresAt { get; set; }
+    public DateTime? ExpiresAt { get; set; }
+
+    [Column(TypeName = "timestamp with time zone")]
+
+    public DateTime? RefreshExpiresAt { get; set; }
 
     [ForeignKey("UserId")]
     [InverseProperty("Sessions")]
