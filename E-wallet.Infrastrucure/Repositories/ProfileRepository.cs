@@ -41,5 +41,16 @@ namespace E_wallet.Infrastrucure.Repositories
             return _context.SaveChangesAsync();
 
         }
+
+        public Task<Profile?> GetByUserIdAsync(int userId)
+        {
+            //getting the profile by user id including the user and their default wallet
+            //If no profile is found, it returns null
+            return _context.Profiles
+                .Include(p => p.User)
+                    .ThenInclude(u => u.Wallets.Where(w => w.IsDefaultWallet)) 
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.UserId == userId);
+        }
     }
 }

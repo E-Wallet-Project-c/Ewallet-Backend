@@ -13,8 +13,7 @@ namespace E_wallet.Domain.Interfaces
         Task <Profile?> GetByIdAsync(int id);
         Task UpdateAsync(Profile profile);
         Task<IEnumerable<Profile>> GetAllAsync();
-
-
+        Task<Profile?> GetByUserIdAsync(int userId);
 
 
     }

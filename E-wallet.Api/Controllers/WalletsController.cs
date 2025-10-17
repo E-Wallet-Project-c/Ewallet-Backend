@@ -1,4 +1,5 @@
-﻿using E_wallet.Application.Interfaces;
+﻿using E_wallet.Application.Dtos.Response;
+using E_wallet.Application.Interfaces;
 using E_wallet.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,16 +28,27 @@ namespace E_wallet.Api.Controllers
             return Ok(balanceDto);
         }
 
-        [HttpPost("CreatFirstWallet")]
-        public async Task<IActionResult> CreatFirstWallet (int UserID)
+        [HttpPost("CreatWallet{UserId}")]
+        public async Task<ActionResult<WalletResponse>> CreatWallet (int UserId)
         {
-            var response = await _walletService.CreateFirstWallet(UserID);
+            var response = await _walletService.CreateWallet(UserId);
 
             if (response.WalletId == 0)
             {
                 return BadRequest(response);
             }
 
+            return Ok(response);
+        }
+
+        [HttpGet("GetUserWallets{UserId}")]
+        public async Task<ActionResult<List<WalletResponse>>> GetUserWallets(int UserId)
+        {
+            var response = await _walletService.GetUserWallets(UserId);
+           if (response.Count == 0)
+            {
+                return NotFound(new { message = "No wallets found for this user." });
+            }
             return Ok(response);
         }
     }
