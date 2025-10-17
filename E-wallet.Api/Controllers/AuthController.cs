@@ -48,24 +48,56 @@ namespace E_wallet.Api.Controllers
 
         }
 
-        [HttpPost("login")]
+        [HttpPost("RefreshToken")]
+        public async Task<IActionResult> RefreshToken(RefreshTokenRequest refreshToken)
+        {
+            var result = await _userService.RefreshTokenAsync(refreshToken);
+            try
+            {
+                if (!result.IsSuccess)
+                    return BadRequest(new { message = result.ErrorMessage });
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+            [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserLoginRequest loginDto)
         {
             try
             {
-                var result = await _userService.LoginUserAsync(loginDto);
+                var result = await _userService.LoginAsync(loginDto);
 
-                if (!result.Success)
-                    return BadRequest(new { message = result.Message });
+                if (!result.IsSuccess)
+                    return BadRequest(new { message = result.ErrorMessage });
 
                 return Ok(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                throw ex;
             }
 
+        }
+
+        [HttpPost("Logout")]
+        public async Task<IActionResult> Logout([FromBody] RefreshTokenRequest dto)
+        {
+            try
+            {
+                var result = await _userService.LogoutAsync(dto);
+                if (!result.IsSuccess)
+                    return BadRequest(new { message = result.ErrorMessage });
+                return Ok(new { message = "Logout successful" });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         [HttpPost("ForgetPassword")]

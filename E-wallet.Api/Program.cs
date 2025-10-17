@@ -42,7 +42,8 @@ namespace E_wallet.Api
             builder.Services.AddScoped<IProfileService, ProfileService>();
             builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
             // Repository for wallet
-            builder.Services.AddScoped<IWalletRepository, WalletRepository>();
+            builder.Services.AddScoped<IWalletRepository , WalletRepository>();
+            builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 
             // Service for wallet
             builder.Services.AddScoped<IWalletService, WalletService>();
@@ -65,6 +66,7 @@ namespace E_wallet.Api
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = jwtSettings["validIssuer"],
                     ValidAudience = jwtSettings["validAudience"],

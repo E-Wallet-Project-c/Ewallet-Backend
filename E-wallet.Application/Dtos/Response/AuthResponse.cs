@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace E_wallet.Application.Dtos.Response
 {
-    public class TokenResponse
+    public class AuthResponse
     {
         public string AccessToken { get; set; } = null!;
 
