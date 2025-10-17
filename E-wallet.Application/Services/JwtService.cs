@@ -22,7 +22,7 @@ namespace E_wallet.Application.Services
             var issuer = jwtSettings["validIssuer"];
             var audience = jwtSettings["validAudience"];
             var expires = DateTime.UtcNow.AddMinutes(int.Parse( jwtSettings["tokenExpirationInMinutes"]!));
-            var key = (jwtSettings["secretKey"]!);
+            var key = jwtSettings["secretKey"]!;
 
             var claims = new List<Claim>
             {

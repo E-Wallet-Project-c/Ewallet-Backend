@@ -26,7 +26,7 @@ namespace E_wallet.Application.Mappers
         {
             return new UserProfileResponse
             {
-                id = entity.Id,
+                Id = entity.Id,
                 DateOfBirth = entity.DateOfBirth,
                 Country = entity.Country,
                 Phone = entity.Phone,

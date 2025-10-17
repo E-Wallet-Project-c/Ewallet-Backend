@@ -4,11 +4,13 @@ using E_wallet.Application.Interfaces;
 using E_wallet.Application.Mappers;
 using E_wallet.Domain.Entities;
 using E_wallet.Domain.Interfaces;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace E_wallet.Application.Services
 {
@@ -58,12 +60,23 @@ namespace E_wallet.Application.Services
         {
             var profile = await _profileRepository.GetByIdAsync(id);
             return profile;
-
+             
         }
 
-        public Task<Profile?> GetByUserIdAsync(int userId)
+        public async Task<UserProfileResponse> GetByUserIdAsync(int userId)
         {
-            throw new NotImplementedException();
+
+            var profile = await _profileRepository.GetByUserIdAsync(userId);
+            // if no profile is found, return null 
+            if (profile == null)
+                return null;
+
+            var response = _mapper.toResponse(profile);
+            
+            response.WalletId = profile.User?.Wallets?.FirstOrDefault()?.Id;
+
+            return response;
+
         }
 
         public async Task<UserProfileResponse> UpdateProfileAsync(int id, UserProfileRequest dto)
