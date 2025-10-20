@@ -22,69 +22,12 @@ namespace E_wallet.Api
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+            builder.Services.AddConectionString(builder.Configuration);
             builder.Services.AddConnections();
+            builder.Services.AddEwalletServices();
 
-            builder.Services.AddFluentValidationAutoValidation();
-
-            builder.Services.AddValidatorsFromAssembly(typeof(RegisterRequestValidator).Assembly, includeInternalTypes: true);
-            builder.Services.AddValidatorsFromAssembly(typeof(UserProfileRequestValidator).Assembly, includeInternalTypes: true);
-            //mapper 
-            builder.Services.AddSingleton<ProfileMapper>();
-            // Register your services here:
-            builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-            // Add MailingHelper as a singleton service
-            builder.Services.AddScoped<E_wallet.Domain.IHelpers.IEmailHelper, MailingHelper>();
-            //Create Profile service and repository
-            builder.Services.AddScoped<IProfileService, ProfileService>();
-            builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
-            // Repository for wallet
-            builder.Services.AddScoped<IWalletRepository , WalletRepository>();
-            builder.Services.AddScoped<ISessionRepository, SessionRepository>();
-
-            // Service for wallet
-            builder.Services.AddScoped<IWalletService, WalletService>();
-            //Jwt Register
-            builder.Services.AddScoped<IJwtService, JwtService>();  
-
-            //Jwt Authentication
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-            }
-            ).AddJwtBearer(options =>
-            {
-                var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-
-                options.TokenValidationParameters = new()
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings["validIssuer"],
-                    ValidAudience = jwtSettings["validAudience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["secretKey"]!))
-
-                };
-            });
-
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-                options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
-            });
-
-            builder.Services.AddControllers();
-            builder.Services.AddOpenApi();
-            builder.Services.AddSwaggerGen();
-
+            builder.Services.AddAuthentiactionAndAuthorization(builder.Configuration);
+            builder.Services.AddApiServices();
             var app = builder.Build();
 
             app.UseAuthentication();
@@ -92,10 +35,13 @@ namespace E_wallet.Api
 
             app.UseSwagger();
             app.UseSwaggerUI();
-            if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
-            }
+            //app.UseSwaggerUI(c =>
+            //{
+            //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "E-wallet Api V1");
+
+            //    c.RoutePrefix = string.Empty;
+            //}
+            //);
 
             app.UseHttpsRedirection();
 
