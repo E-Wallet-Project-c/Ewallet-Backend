@@ -24,7 +24,8 @@ namespace E_wallet.Application.Services
         {
 
             var wallet = await _walletRepo.GetWalletByIdAsync(walletId);
-            if (wallet == null) return null;
+            if (wallet == null) 
+                return null;
 
             var transactions = await _walletRepo.GetWalletTransactionsAsync(walletId);
 

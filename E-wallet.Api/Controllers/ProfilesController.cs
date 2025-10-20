@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace E_wallet.Api.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "User")]
+    //[Authorize(Roles = "User")]
     [ApiController]
     public class ProfilesController : ControllerBase
     {
