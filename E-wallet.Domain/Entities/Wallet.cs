@@ -55,5 +55,5 @@ public partial class Wallet
     public virtual User User { get; set; } = null!;
 
     [InverseProperty("Wallet")]
-    public virtual ICollection<VirtualBank> VirtualBanks { get; set; } = new List<VirtualBank>();
+    public virtual ICollection<UserBankAccount> UserBankAccounts { get; set; } = new List<UserBankAccount>();
 }
