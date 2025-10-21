@@ -53,9 +53,7 @@ public partial class User
     [InverseProperty("User")]
     public virtual ICollection<Session> Sessions { get; set; } = new List<Session>();
 
-    [InverseProperty("User")]
-    public virtual ICollection<UserBankAccount> UserBankAccounts { get; set; } = new List<UserBankAccount>();
-
+   
     [InverseProperty("User")]
     public virtual ICollection<Wallet> Wallets { get; set; } = new List<Wallet>();
 }

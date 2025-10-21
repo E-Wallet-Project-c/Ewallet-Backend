@@ -11,10 +11,10 @@ public partial class UserBankAccount
 {
     [Key]
     public int Id { get; set; }
+    public int WalletId { get; set; }
 
-    public int UserId { get; set; }
-
-    public int BankId { get; set; }
+    [StringLength(100)]
+    public string BankName { get; set; } = null!;  
 
     [Column(TypeName = "character varying")]
     public string AccountNumber { get; set; } = null!;
@@ -33,11 +33,8 @@ public partial class UserBankAccount
     [StringLength(50)]
     public string? UpdatedBy { get; set; }
 
-    [ForeignKey("BankId")]
-    [InverseProperty("UserBankAccounts")]
-    public virtual VirtualBank Bank { get; set; } = null!;
 
-    [ForeignKey("UserId")]
+    [ForeignKey("WalletId")]
     [InverseProperty("UserBankAccounts")]
-    public virtual User User { get; set; } = null!;
+    public virtual Wallet Wallet { get; set; } = null!;
 }

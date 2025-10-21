@@ -36,6 +36,9 @@ namespace E_wallet.Api
             services.AddScoped<IJwtService, JwtService>();
             //mapper 
             services.AddSingleton<ProfileMapper>();
+            //Create UserBankAccount service and repository
+            services.AddScoped<IUserBankAccountService, UserBankAccountService>();
+            services.AddScoped<IUserBankAccountRepository, UserBankAccountRepository>();
             return services;
         }
         public static IServiceCollection AddAuthentiactionAndAuthorization(this IServiceCollection services, IConfiguration configuration)
