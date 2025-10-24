@@ -12,7 +12,7 @@ namespace E_wallet.Application.Dtos.Response
         public DateOnly? DateOfBirth { get; set; }
         public string? Country { get; set; }
         public string? Phone { get; set; }
-        public string UserId { get; set; }
+        public int  UserId { get; set; }
         public int? WalletId { get; set; }
     }
 }
