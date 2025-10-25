@@ -14,7 +14,7 @@ RUN dotnet restore E-wallet.Api/E-wallet.Api.csproj
 # Copy everything else
 COPY . .
 
-COPY E-wallet.Api/appsettings.json ./appsettings.json
+
 
 # Publish the API project
 WORKDIR /src/E-wallet.Api
