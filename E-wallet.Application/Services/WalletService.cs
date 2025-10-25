@@ -1,9 +1,11 @@
-﻿using E_wallet.Application.Dtos.Response;
+﻿using E_wallet.Application.Dtos.Request;
+using E_wallet.Application.Dtos.Response;
 using E_wallet.Application.Interfaces;
 using E_wallet.Application.Mappers;
 using E_wallet.Domain.Entities;
 using E_wallet.Domain.Enums;
 using E_wallet.Domain.Interfaces;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +18,12 @@ namespace E_wallet.Application.Services
     {
         private readonly IWalletRepository _walletRepo;
 
-        public WalletService(IWalletRepository walletRepo)
+        private readonly WalletMapper _mapper;
+
+        public WalletService(IWalletRepository walletRepo, WalletMapper mapper)
         {
             _walletRepo = walletRepo;
+            _mapper = mapper;
         }
         public async Task<WalletBalanceResponseDto?> GetWalletBalanceAsync(int walletId)
         {
@@ -40,55 +45,39 @@ namespace E_wallet.Application.Services
 
         }
 
-        public async Task<WalletResponse> CreateWallet(int UserId)
+        public async Task<Result<WalletResponse>> CreateWallet(WalletRequest NewWallet)
         {
             //get all wallets by user id
             //checking if user already has a wallet
-            var wallet = await _walletRepo.GetWalletsByUserId(UserId);
-            bool IsDefault=true;
+            var wallet = await _walletRepo.GetWalletsByUserId(NewWallet.UserId);
+            NewWallet.IsDefault = true;
             if (wallet.Count!=0)
             {
-                IsDefault = false;
+                NewWallet.IsDefault = false;
             }
-                var savedWallet= await  _walletRepo.CreateWallet(new Wallet
-                {
-                    UserId = UserId,
-                    Currency = "JD",
-                    IsActive = true,
-                    IsDeleted = false,
-                    IsDefaultWallet= IsDefault,
-                    CreatedAt = DateTime.Now,
-                    CreatedBy=null
-                });
-                return new WalletResponse
-                {
-                    WalletId = savedWallet.Id,
-                    userId = savedWallet.UserId,
-                    Message = "Wallet created successfully."
-                };
-           
+
+            if (_walletRepo.GetWalletsByUserId(NewWallet.UserId) !=null)
+            {
+               return Result<WalletResponse>.Failure("Wallet is not exist");
+            }
+            var savedWallet = await _walletRepo.CreateWallet(_mapper.ToEntity(NewWallet.UserId, NewWallet.IsDefault));
+
+            return Result<WalletResponse>.Success(_mapper.ToResponse(savedWallet)); 
+
         }
-       public async Task<List<WalletResponse>> GetUserWallets (int UserId)
+       public async Task<Result<WalletResponse>> GetUserWallets (WalletRequest NewWallet)
         {
            
             //getting all wallets by user id
-            var wallets = await _walletRepo.GetWalletsByUserId(UserId);
+            var wallets = await _walletRepo.GetWalletsByUserId(NewWallet.UserId);
             if (wallets.Count == 0)
             {
-                return new List<WalletResponse>();
+                return Result<WalletResponse>.Failure("User has no wallets");
             }
             //transforming from Wallet entity to response DTO and returning the list
-            return wallets.Select(wallet => new WalletResponse
-            {
-                WalletId = wallet.Id,
-                userId = wallet.UserId,
-                Currency = wallet.Currency,
-                IsDefaultWallet = wallet.IsDefaultWallet,
-                IsDeleted = wallet.IsDeleted,
-                IsActive = wallet.IsActive,
-                UpdatedAt = wallet.UpdatedAt,
-                CreatedAt = wallet.CreatedAt
-            }).ToList();
+           
+            return Result<WalletResponse>.Success(_mapper.ToListResponse(wallets));
+
         }
 
     } 
