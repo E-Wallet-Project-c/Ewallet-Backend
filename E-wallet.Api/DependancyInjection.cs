@@ -39,6 +39,8 @@ namespace E_wallet.Api
             //Create UserBankAccount service and repository
             services.AddScoped<IUserBankAccountService, UserBankAccountService>();
             services.AddScoped<IUserBankAccountRepository, UserBankAccountRepository>();
+
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
             return services;
         }
         public static IServiceCollection AddAuthentiactionAndAuthorization(this IServiceCollection services, IConfiguration configuration)

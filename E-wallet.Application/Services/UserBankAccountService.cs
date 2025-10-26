@@ -30,6 +30,20 @@ namespace E_wallet.Application.Services
 
         }
 
+        public async Task<Result<List<UserBankAccountResponse>>> GetAllByWalletIdAsync(int walletId)
+        {
+            var userBankAccounts = await _userBankAccountRepository.GetByWalletIdAsync(walletId);
+            var responseList = new List<UserBankAccountResponse>();
+
+            foreach (var userBankAcc in userBankAccounts)
+            {
+                responseList.Add(UserBankAccountMapper.toResponse(userBankAcc));
+            }
+
+            return Result<List<UserBankAccountResponse>>.Success(responseList);
+
+        }
+
 
     }
 }

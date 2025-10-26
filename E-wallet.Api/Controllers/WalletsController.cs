@@ -1,5 +1,7 @@
-﻿using E_wallet.Application.Dtos.Response;
+﻿using E_wallet.Application.Dtos.Request;
+using E_wallet.Application.Dtos.Response;
 using E_wallet.Application.Interfaces;
+using E_wallet.Application.Services;
 using E_wallet.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -49,6 +51,31 @@ namespace E_wallet.Api.Controllers
             {
                 return NotFound(new { message = "No wallets found for this user." });
             }
+            return Ok(response);
+        }
+
+
+        [HttpPost("TopUpWallet")]
+        public async Task<IActionResult> TopUpWallet([FromBody] TopUpWithdrawRequest request)
+        {
+            var response = await _walletService.TopUpToWalletAsync(request);
+
+            if (!response.IsSuccess)
+                return BadRequest(response);
+
+
+            return Ok(response);
+        }
+
+        [HttpPost("WithdrawWallet")]
+        public async Task<IActionResult> WithdrawBankAccount([FromBody] TopUpWithdrawRequest request)
+        {
+            var response = await _walletService.WithdrawFromWalletAsync(request);
+
+            if (!response.IsSuccess)
+                return BadRequest(response);
+
+
             return Ok(response);
         }
     }
