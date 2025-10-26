@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace E_wallet.Api.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "User")]
+    //[Authorize(Roles = "User")]
     [ApiController]
     public class ProfilesController : ControllerBase
     {
@@ -33,13 +33,15 @@ namespace E_wallet.Api.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        [HttpGet("GetProfileById{id}")]
+        [HttpGet("GetProfileById{id}")] 
         public async Task<ActionResult<UserProfileResponse>> GetById(int id)
         {
             var response = await _profileService.GetByIdAsync(id);
             if (response == null)
                 return NotFound();
-            return Ok(response);
+            return Ok(response); 
+
+
         }
 
         [HttpPut("Update-Profile{id}")]

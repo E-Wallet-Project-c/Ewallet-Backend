@@ -29,7 +29,7 @@ namespace E_wallet.Api.Controllers
 
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UserRegisterRequest registerDto)
+        public async Task<IActionResult> Register([FromBody] UserRegisterRequest registerDto, CancellationToken ct)
         {
             try
             {

@@ -30,7 +30,7 @@ namespace E_wallet.Application.Mappers
                 DateOfBirth = entity.DateOfBirth,
                 Country = entity.Country,
                 Phone = entity.Phone,
-                UserId = entity.UserId.ToString()
+                UserId = entity.UserId
             };
         }
     }

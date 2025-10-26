@@ -40,7 +40,6 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<UserBankAccount> UserBankAccounts { get; set; }
 
-    public virtual DbSet<VirtualBank> VirtualBanks { get; set; }
 
     public virtual DbSet<Wallet> Wallets { get; set; }
 
@@ -179,31 +178,24 @@ public partial class ApplicationDbContext : DbContext
 
         });
 
+
         modelBuilder.Entity<UserBankAccount>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("UserBankAccount_pkey");
 
             entity.Property(e => e.Id).UseIdentityAlwaysColumn();
 
-            entity.HasOne(d => d.Bank).WithMany(p => p.UserBankAccounts)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("Fk-BankId");
-
-            entity.HasOne(d => d.User).WithMany(p => p.UserBankAccounts)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("Fk-UserId");
-        });
-
-        modelBuilder.Entity<VirtualBank>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("VirtualBank_pkey");
-
-            entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-
-            entity.HasOne(d => d.Wallet).WithMany(p => p.VirtualBanks)
+            // Configure Wallet relationship
+            entity.HasOne(d => d.Wallet)
+                .WithMany(p => p.UserBankAccounts)
+                .HasForeignKey(d => d.WalletId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Fk-WalletId");
+           
         });
+
+
+
 
         modelBuilder.Entity<Wallet>(entity =>
         {
