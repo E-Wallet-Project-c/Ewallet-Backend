@@ -31,27 +31,43 @@ namespace E_wallet.Api.Controllers
         }
 
         [HttpPost("CreatWallet{UserId}")]
-        public async Task<ActionResult<WalletResponse>> CreatWallet (int UserId)
+        public async Task<ActionResult> CreatWallet (WalletRequest NewWallet)
         {
-            var response = await _walletService.CreateWallet(UserId);
-
-            if (response.WalletId == 0)
+            try
             {
-                return BadRequest(response);
-            }
+                var response = await _walletService.CreateWallet(NewWallet);
 
-            return Ok(response);
+                if (!response.IsSuccess)
+                {
+                    return BadRequest(response.ErrorMessage);
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"{ex.Message}");
+                
+            }
+            
         }
 
         [HttpGet("GetUserWallets{UserId}")]
-        public async Task<ActionResult<List<WalletResponse>>> GetUserWallets(int UserId)
+        public async Task<ActionResult> GetUserWallets(WalletRequest NewWallet)
         {
-            var response = await _walletService.GetUserWallets(UserId);
-           if (response.Count == 0)
+            try
             {
-                return NotFound(new { message = "No wallets found for this user." });
+                var response = await _walletService.GetUserWallets(NewWallet);
+                if (!response.IsSuccess)
+                {
+                    return NotFound( response.ErrorMessage );
+                }
+                return Ok(response);
             }
-            return Ok(response);
+            catch (Exception ex) {
+                return StatusCode(500, $"{ex.Message}");
+            }
+           
         }
 
 

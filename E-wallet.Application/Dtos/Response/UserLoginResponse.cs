@@ -11,5 +11,6 @@ namespace E_wallet.Application.Dtos.Response
         public int Id { get; set; }
         public bool Success { get; set; } = true;
         public string? Message { get; set; }
+
     }
 }

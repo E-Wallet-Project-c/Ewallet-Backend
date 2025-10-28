@@ -9,18 +9,22 @@ namespace E_wallet.Application.Dtos.Response
     public class Result<T> //where T : class
     {
         public  T? Value { get; }
+        public List<T?> Values { get; }
         public  string? ErrorMessage { get; }
         public bool IsSuccess => ErrorMessage == null;
 
 
-        private Result(T? value, string? errorMessage)
+        private Result(T? value, string? errorMessage,List<T?>? values)
         {
             Value = value;
             ErrorMessage = errorMessage;
+            Values = values;
         }
 
-        public static Result<T> Success(T value) => new Result<T>(value, null);
-        public static Result<T> Failure(string errorMessage) => new Result<T>(default, errorMessage);
+        public static Result<T> Success(T value) => new Result<T>(value, null,default);
+        public static Result<T> Success(List <T?> values) => new Result<T>(default, null,values);
+
+        public static Result<T> Failure(string errorMessage) => new Result<T>(default, errorMessage,default);
     }
 
     public class Result
