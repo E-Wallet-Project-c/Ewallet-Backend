@@ -10,6 +10,8 @@ namespace E_wallet.Domain.Enums
     {
         TopUp,   
         Withdraw, 
+        Send,
+        Receive,
         Fee      
     }
 }
