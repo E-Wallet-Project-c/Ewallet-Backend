@@ -31,11 +31,11 @@ namespace E_wallet.Api.Controllers
         }
 
         [HttpPost("CreatWallet{UserId}")]
-        public async Task<ActionResult> CreatWallet (WalletRequest NewWallet)
+        public async Task<ActionResult> CreatWallet (int UserId, WalletRequest NewWallet)
         {
             try
             {
-                var response = await _walletService.CreateWallet(NewWallet);
+                var response = await _walletService.CreateWallet( UserId, NewWallet);
 
                 if (!response.IsSuccess)
                 {
@@ -53,7 +53,7 @@ namespace E_wallet.Api.Controllers
         }
 
         [HttpGet("GetUserWallets{UserId}")]
-        public async Task<ActionResult> GetUserWallets(WalletRequest NewWallet)
+        public async Task<ActionResult> GetUserWallets( WalletRequest NewWallet)
         {
             try
             {
@@ -87,6 +87,18 @@ namespace E_wallet.Api.Controllers
         public async Task<IActionResult> WithdrawBankAccount([FromBody] TopUpWithdrawRequest request)
         {
             var response = await _walletService.WithdrawFromWalletAsync(request);
+
+            if (!response.IsSuccess)
+                return BadRequest(response);
+
+
+            return Ok(response);
+        }
+
+        [HttpPost("TransferFromWallet")]
+        public async Task<IActionResult> TransferFromWallet([FromBody] TransferRequest request)
+        {
+            var response = await _walletService.TransferFromWalletAsync(request);
 
             if (!response.IsSuccess)
                 return BadRequest(response);

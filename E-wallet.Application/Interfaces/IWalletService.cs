@@ -11,10 +11,11 @@ namespace E_wallet.Application.Interfaces
     public interface IWalletService
     {
         Task<WalletBalanceResponseDto?> GetWalletBalanceAsync(int walletId);
-        Task<WalletResponse> CreateWallet(int UserId);
-        Task<List<WalletResponse>> GetUserWallets(int UserId);
+        Task<Result<WalletResponse>> CreateWallet(int UserId,WalletRequest NewWallet);
+        Task<Result<WalletResponse>> GetUserWallets(WalletRequest NewWallet);
         Task<Result<TopUpWithdrawResponse>> TopUpToWalletAsync(TopUpWithdrawRequest dto);
         Task<Result<TopUpWithdrawResponse>> WithdrawFromWalletAsync(TopUpWithdrawRequest dto);
+        Task<Result<TransferResponse>> TransferFromWalletAsync(TransferRequest dto);
 
     }
 
