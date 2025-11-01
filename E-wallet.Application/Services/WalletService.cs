@@ -22,6 +22,7 @@ namespace E_wallet.Application.Services
         private readonly IUserBankAccountRepository _userBankAccountRepo;
         private readonly WalletMapper _mapper;
         private readonly ITransferRepository _transferRepository;
+
         public WalletService(IWalletRepository walletRepo, WalletMapper mapper, ITransactionRepository transactionRepo, IUserBankAccountRepository userBankAccountRepo, ITransferRepository transferRepository)
         {
             _walletRepo = walletRepo;
@@ -29,6 +30,7 @@ namespace E_wallet.Application.Services
             _transactionRepo = transactionRepo;
             _userBankAccountRepo = userBankAccountRepo;
             _transferRepository = transferRepository;
+       
 
         }
         public async Task<WalletBalanceResponseDto?> GetWalletBalanceAsync(int walletId)
@@ -52,7 +54,7 @@ namespace E_wallet.Application.Services
 
         }
 
-        public async Task<Result<WalletResponse>> CreateWallet(int UserId,WalletRequest NewWallet)
+        public async Task<Result<WalletResponse>> CreateWallet(int UserId, WalletRequest NewWallet)
         {
             //get all wallets by user id
             //checking if user already has a wallet
@@ -133,6 +135,10 @@ namespace E_wallet.Application.Services
 
         }
 
+
+
+
+
         public async Task<Result<TopUpWithdrawResponse>> WithdrawFromWalletAsync(TopUpWithdrawRequest dto)
         {
             //here we want to withdraw from wallet to the bank account , so we will decrease balance from wallet 
@@ -171,10 +177,13 @@ namespace E_wallet.Application.Services
 
             var userBankAccNew = await _userBankAccountRepo.EditAsync(userBankAcc);
 
+            var transactionsUpdated = await _walletRepo.GetWalletTransactionsAsync(dto.WalletId);
+            double newWalletBalance = transactionsUpdated.Sum(t => t.Type == TransactionType.Credit ? t.Amount : -t.Amount);
+
             return Result<TopUpWithdrawResponse>.Success(new TopUpWithdrawResponse
             {
                 UserBankAccountId = dto.UserBankAccountId,
-                NewBalance = walletBalance
+                NewBalance = newWalletBalance
             });
 
         }

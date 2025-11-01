@@ -18,16 +18,18 @@ namespace E_wallet.Infrastrucure.Repositories
         {
             _context = context;
         }
-        public async  Task<Wallet?> GetWalletByIdAsync(int walletId)
+        public async Task<Wallet?> GetWalletByIdAsync(int walletId)
         {
             return await _context.Wallets
              .Include(w => w.Transactions)
+             .AsNoTracking()
              .FirstOrDefaultAsync(w => w.Id == walletId && w.IsActive == true && w.IsDeleted == false);
         }
 
-        public async  Task<IEnumerable<Transaction>> GetWalletTransactionsAsync(int walletId)
+        public async Task<IEnumerable<Transaction>> GetWalletTransactionsAsync(int walletId)
         {
             return await _context.Transactions
+                .AsNoTracking()
                 .Where(t => t.WalletId == walletId && t.IsActive == true)
                 .ToListAsync();
         }
@@ -40,8 +42,8 @@ namespace E_wallet.Infrastrucure.Repositories
         }
         public async Task<Wallet> CreateWallet(Wallet wallet)
         {
-           await _context.Wallets.AddAsync(wallet);
-           await _context.SaveChangesAsync();
+            await _context.Wallets.AddAsync(wallet);
+            await _context.SaveChangesAsync();
             return wallet;
         }
     }

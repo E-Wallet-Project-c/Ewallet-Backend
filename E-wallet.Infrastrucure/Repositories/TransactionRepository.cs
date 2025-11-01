@@ -20,7 +20,7 @@ namespace E_wallet.Infrastrucure.Repositories
         public async Task<Transaction> AddAsync(Transaction transaction)
         {
             _context.Transactions.Add(transaction);
-            _context.SaveChangesAsync();
+            await  _context.SaveChangesAsync();
             return transaction;
         }
     }
