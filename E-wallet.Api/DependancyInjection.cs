@@ -30,6 +30,7 @@ namespace E_wallet.Api
             // Repository for wallet
             services.AddScoped<IWalletRepository, WalletRepository>();
             services.AddScoped<ISessionRepository, SessionRepository>();
+            services.AddScoped<WalletMapper>();
             // Service for wallet
             services.AddScoped<IWalletService, WalletService>();
             //Jwt Register

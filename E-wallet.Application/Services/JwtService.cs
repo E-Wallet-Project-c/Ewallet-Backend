@@ -27,24 +27,24 @@ namespace E_wallet.Application.Services
         #region Generate access and refresh token
         public async Task<AuthResponse> GenerateToken(GenerateTokenRequest request)
         {
-            var accessToken   =  GenerateAccessToken(request);
+            var accessToken   =  await GenerateAccessToken(request);
             string refreshToken = await GenerateRefreshToken(request.UserId);
             
-            return AuthMapper.ToResponse(accessToken.AccessToken,
+            return  AuthMapper.ToResponse(accessToken.AccessToken,
                 refreshToken,
-                accessToken.Expiries);
+                accessToken.Expires);
         }
         #endregion
 
 
         #region Generate Refresh Token
-        private async Task<string> GenerateRefreshToken(int userId)
+        public async Task<string> GenerateRefreshToken(int userId)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
 
 
             var refreshToken = GenerateRandomString();
-            var refreshTokenExpiryInDays = DateTime.UtcNow.AddDays( int.Parse(jwtSettings["RefreshTokenExpirationInDays"]!));
+            var refreshTokenExpiryInDays = DateTime.UtcNow.AddMinutes( int.Parse(jwtSettings["RefreshTokenExpirationInMinutes"]!));
 
 
             await SaveRefreshTokenToDatabase(userId, refreshToken, refreshTokenExpiryInDays);
@@ -80,7 +80,7 @@ namespace E_wallet.Application.Services
         #endregion
 
         #region Generate Access Token
-        private  (string AccessToken, DateTime Expiries) GenerateAccessToken(GenerateTokenRequest request)
+        public async Task<(string AccessToken, DateTime Expires)> GenerateAccessToken(GenerateTokenRequest request)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
 
@@ -99,7 +99,7 @@ namespace E_wallet.Application.Services
 
             };
 
-            var descreptor = new SecurityTokenDescriptor
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = expires,
@@ -108,11 +108,11 @@ namespace E_wallet.Application.Services
                 SigningCredentials = new SigningCredentials(
 
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
-                SecurityAlgorithms.HmacSha384Signature)
+                SecurityAlgorithms.HmacSha512Signature)
 
             };
             var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(descreptor);
+            var token = tokenHandler.CreateToken(tokenDescriptor);
             return  (tokenHandler.WriteToken(token), expires );
         }
         #endregion
