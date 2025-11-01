@@ -32,7 +32,7 @@ namespace E_wallet.Api
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+       
             app.UseSwagger();
             app.UseSwaggerUI();
             //app.UseSwaggerUI(c =>

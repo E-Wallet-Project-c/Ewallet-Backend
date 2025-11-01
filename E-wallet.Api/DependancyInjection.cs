@@ -33,6 +33,8 @@ namespace E_wallet.Api
             services.AddScoped<WalletMapper>();
             // Service for wallet
             services.AddScoped<IWalletService, WalletService>();
+            services.AddScoped<WalletMapper>();
+
             //Jwt Register
             services.AddScoped<IJwtService, JwtService>();
             //mapper 
@@ -40,6 +42,11 @@ namespace E_wallet.Api
             //Create UserBankAccount service and repository
             services.AddScoped<IUserBankAccountService, UserBankAccountService>();
             services.AddScoped<IUserBankAccountRepository, UserBankAccountRepository>();
+
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
+
+            services.AddScoped<ITransferRepository, TransferRepository>();
+
             return services;
         }
         public static IServiceCollection AddAuthentiactionAndAuthorization(this IServiceCollection services, IConfiguration configuration)

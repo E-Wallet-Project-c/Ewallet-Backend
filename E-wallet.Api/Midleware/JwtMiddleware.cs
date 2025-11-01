@@ -18,7 +18,6 @@ namespace E_wallet.Api.Midleware
 
         public async Task InvokeAsync(HttpContext context, IJwtService jwtService)
         {
-            await _next(context);
 
             if (context.User.Identity?.IsAuthenticated == true)
             {
@@ -60,6 +59,8 @@ namespace E_wallet.Api.Midleware
                     }
                 }
             }
+            await _next(context);
+
         }
     }
 }
