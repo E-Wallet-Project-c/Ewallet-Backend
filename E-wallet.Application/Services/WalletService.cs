@@ -90,6 +90,7 @@ namespace E_wallet.Application.Services
 
         }
 
+        #region TopUpToWalletAsync
         public async Task<Result<TopUpWithdrawResponse>> TopUpToWalletAsync(TopUpWithdrawRequest dto)
         {
             //here we want to topup the wallet from the bank account , so we will add the balance to wallet 
@@ -134,11 +135,12 @@ namespace E_wallet.Application.Services
             });
 
         }
+        #endregion
 
 
 
 
-
+        #region WithdrawFromWalletAsync
         public async Task<Result<TopUpWithdrawResponse>> WithdrawFromWalletAsync(TopUpWithdrawRequest dto)
         {
             //here we want to withdraw from wallet to the bank account , so we will decrease balance from wallet 
@@ -170,7 +172,6 @@ namespace E_wallet.Application.Services
             });
 
 
-            //edit bank balance 
             double BankAccBalance = userBankAcc.Balance;
             BankAccBalance += dto.Balance;
             userBankAcc.Balance = BankAccBalance;
@@ -188,6 +189,10 @@ namespace E_wallet.Application.Services
 
         }
 
+        #endregion
+
+
+        #region TransferFromWalletAsync
         public async Task<Result<TransferResponse>> TransferFromWalletAsync(TransferRequest dto)
         {
             try
@@ -222,7 +227,7 @@ namespace E_wallet.Application.Services
                 await _transactionRepo.AddAsync(TransactionMapper.ToReceiverEntity(transferReterned.Id, dto));
                 //2-add the fee transaction
                 await _transactionRepo.AddAsync(TransactionMapper.ToFeeEntity(transferReterned.Id, dto));
-
+                
                 return Result<TransferResponse>.Success(TransferMapper.ToTransferResponse(transferReterned.Id));
 
             }
@@ -234,6 +239,7 @@ namespace E_wallet.Application.Services
             }
 
         }
+        #endregion 
 
     }
 }
