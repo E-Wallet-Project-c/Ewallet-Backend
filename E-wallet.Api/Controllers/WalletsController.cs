@@ -3,12 +3,14 @@ using E_wallet.Application.Dtos.Response;
 using E_wallet.Application.Interfaces;
 using E_wallet.Application.Services;
 using E_wallet.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_wallet.Api.Controllers
 {
     [Route("api/[controller]")]
+    //[Authorize(Roles = "User")]
     [ApiController]
     public class WalletsController : ControllerBase
     {

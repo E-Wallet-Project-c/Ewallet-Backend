@@ -29,7 +29,7 @@ namespace E_wallet.Api.Controllers
 
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UserRegisterRequest registerDto)
+        public async Task<IActionResult> Register([FromBody] UserRegisterRequest registerDto, CancellationToken ct)
         {
             try
             {
@@ -56,6 +56,13 @@ namespace E_wallet.Api.Controllers
             {
                 if (!result.IsSuccess)
                     return BadRequest(new { message = result.ErrorMessage });
+               
+                if (!IsMobileClient())
+                {
+                    SetRefreshTokenCookie(result.Value.RefreshToken, result.Value.Expiries);
+                    return Ok(result);
+                }
+                
                 return Ok(result);
             }
             catch (Exception ex)
@@ -63,8 +70,9 @@ namespace E_wallet.Api.Controllers
                 throw ex;
             }
         }
+       
 
-            [HttpPost("login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserLoginRequest loginDto)
         {
             try
@@ -73,6 +81,13 @@ namespace E_wallet.Api.Controllers
 
                 if (!result.IsSuccess)
                     return BadRequest(new { message = result.ErrorMessage });
+
+
+                if (!IsMobileClient())
+                {
+                    SetRefreshTokenCookie(result.Value.RefreshToken, result.Value.Expiries);
+                    return Ok(result);
+                }
 
                 return Ok(result);
             }
@@ -138,6 +153,21 @@ namespace E_wallet.Api.Controllers
 
                 return Ok(new { message = result });
             }
-        
+        private void SetRefreshTokenCookie(string refreshToken, DateTime expires)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true, // Ensure this is true in production
+                SameSite = SameSiteMode.Strict,
+                Expires = expires
+            };
+            Response.Cookies.Append("X-Refresh-Token", refreshToken, cookieOptions);
+        }
+
+        private bool IsMobileClient()
+        {
+            return Request.Headers.TryGetValue("X-Client-Type", out var clientType) && clientType == "mobile";
+        }
     } 
 }

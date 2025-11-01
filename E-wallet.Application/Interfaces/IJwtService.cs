@@ -11,6 +11,8 @@ namespace E_wallet.Application.Interfaces
     public interface IJwtService
     {
         Task<AuthResponse> GenerateToken(GenerateTokenRequest request);
+        Task<(string AccessToken, DateTime Expires)> GenerateAccessToken(GenerateTokenRequest request);
+        Task<string> GenerateRefreshToken(int userId);
 
     }
 }

@@ -1,20 +1,15 @@
 # Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
+[Bb]in/
+[Oo]bj/
+[Dd]ebug*/
+[Rr]elease*/
 x64/
 x86/
 arm/
 arm64/
-[Ww][Ii][Nn]32/
-[Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
 bld/
-[Bb]in/
-[Oo]bj/
 
-# Visual Studio files
+# Visual Studio
 .vs/
 .vscode/
 *.suo
@@ -23,21 +18,12 @@ bld/
 *.sln.docstates
 *.userprefs
 *.csproj.user
-*.vcxproj.filters
 
-# NuGet packages
+# NuGet
 packages/
 *.nupkg
-*.nuget.props
-*.nuget.targets
 
-# .NET Core
-project.lock.json
-project.assets.json
-*.runtimeconfig.json
-*.deps.json
-
-# Web files
+# Web (if you have React frontend in same repo)
 wwwroot/lib/
 node_modules/
 npm-debug.log*
@@ -46,34 +32,21 @@ yarn-error.log*
 package-lock.json
 yarn.lock
 
-# IDE and editors
-*.swp
-*.swo
-*.sublime-project
-*.sublime-workspace
+# IDE / Editors
 .idea/
-*.vscode/
+*.sublime-*
+*.sw[po]
 
-# OS generated files
+# OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 Desktop.ini
-$RECYCLE.BIN/
 
-# Logs
+# Logs & Tests
 *.log
-
-# Test files
-*.testresults
 TestResults/
 *.trx
 *.coverage
-.coverage
 
 # CI/CD
 .azure-pipelines/
@@ -82,12 +55,14 @@ TestResults/
 appveyor.yml
 azure-pipelines.yml
 
-# Docker
+# Docker (optional: not strictly needed)
 Dockerfile*
 docker-compose*.yml
-.dockerignore
 
-# User-specific files
+# Publishing (DO NOT IGNORE runtimeconfig/deps.json!)
+# *.runtimeconfig.json   ? REMOVE THESE LINES
+# *.deps.json            ? REMOVE THESE LINES
+
+# User-specific
 *.pubxml
 *.publishproj
-*.Publish.xml
