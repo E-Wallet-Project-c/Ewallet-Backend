@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using E_wallet.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_wallet.Domain.Entities;
 
-[NotMapped]
 [Table("Limit")]
 public partial class Limit
 {
@@ -14,10 +14,10 @@ public partial class Limit
     public int Id { get; set; }
 
     [Column(TypeName = "character varying")]
-    public string Scope { get; set; } = null!;
+    public LimitScope Scope { get; set; } 
 
     [Column(TypeName = "character varying")]
-    public string Type { get; set; } = null!;
+    public LimitType Type { get; set; } 
 
     [Column("Value ")]
     public double Value { get; set; }
