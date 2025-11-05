@@ -22,17 +22,23 @@ namespace E_wallet.Application.Services
         private readonly IUserBankAccountRepository _userBankAccountRepo;
         private readonly WalletMapper _mapper;
         private readonly ITransferRepository _transferRepository;
+        private readonly ILimitRepository _limitRepository;
 
-        public WalletService(IWalletRepository walletRepo, WalletMapper mapper, ITransactionRepository transactionRepo, IUserBankAccountRepository userBankAccountRepo, ITransferRepository transferRepository)
+        public WalletService(IWalletRepository walletRepo,
+            WalletMapper mapper,
+            ITransactionRepository transactionRepo,
+            IUserBankAccountRepository userBankAccountRepo,
+            ITransferRepository transferRepository,
+            ILimitRepository limitRepository)
         {
             _walletRepo = walletRepo;
             _mapper = mapper;
             _transactionRepo = transactionRepo;
             _userBankAccountRepo = userBankAccountRepo;
             _transferRepository = transferRepository;
-       
-
+            _limitRepository = limitRepository;
         }
+
         public async Task<WalletBalanceResponseDto?> GetWalletBalanceAsync(int walletId)
         {
 
@@ -197,11 +203,22 @@ namespace E_wallet.Application.Services
         {
             try
             {
+                //check daily limit
+                if (ExceedNumberOfDailyLimit(dto.SenderWalletId, DateTime.Now))
+                {
+                    return Result<TransferResponse>.Failure("Daily number of transfer limit exceeded for the sender wallet.");
+                }
+
+                // check daily amount limit
+                if (ExceedDailyAmountLimit(dto.SenderWalletId, DateTime.Now, dto.Amount))
+                {
+                    return Result<TransferResponse>.Failure("Daily amount transfer limit exceeded for the sender wallet.");
+                }
                 //here in the transfer we will send amount from sender to receiver , and add these two steps as transaction ,also we should add the fee as transaction
                 //1-add to transfer table 
                 //2-add to transaction table (receiver transaction , sender transaction , fee transaction)
 
-                //check the sender wallet id 
+                //check the sender wallet id c
                 var senderWallet = await _walletRepo.GetWalletByIdAsync(dto.SenderWalletId);
                 if (senderWallet == null)
                     return Result<TransferResponse>.Failure("sender wallet not exist");
@@ -239,7 +256,34 @@ namespace E_wallet.Application.Services
             }
 
         }
-        #endregion 
+        #endregion
+
+        #region CheckDailyLimit
+        private bool ExceedNumberOfDailyLimit(int walletId, DateTime date)
+        {
+            var dailyLimit = _limitRepository.GetLimitsByTypeAndScopeAsync(LimitType.TRANSACTION_COUNT, LimitScope.DAILY);
+            if (dailyLimit == null)
+                return false; // No limit set
+            int transactionsCount = _transactionRepo.GetAllByDay(walletId, date);
+            return transactionsCount >= dailyLimit.Result.Value;
+        }
+        #endregion
+
+        #region CheckDailyAmountLimit
+
+        private bool ExceedDailyAmountLimit(int walletId, DateTime date, double amount)
+        {
+            var dailyAmountLimit = _limitRepository.GetLimitsByTypeAndScopeAsync(LimitType.AMOUNT, LimitScope.DAILY);
+            if (dailyAmountLimit == null)
+                return false; // No limit set
+            decimal? totalAmount = _transactionRepo.GetTotalAmountByDay(walletId, date);
+            if (!totalAmount.HasValue)
+                totalAmount = 0;
+            return ((double?)totalAmount + amount) > dailyAmountLimit.Result.Value;
+        }
+        #endregion
+
+
 
     }
 }
