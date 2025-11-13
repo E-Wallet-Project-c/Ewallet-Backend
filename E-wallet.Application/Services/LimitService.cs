@@ -10,35 +10,51 @@ namespace E_wallet.Application.Services
 {
     public class LimitService : ILimitService
     {
-        private readonly ILimitRepository _limitRepository;
+        private readonly IUnitOfWork _unitOfWork; 
 
-        public LimitService(ILimitRepository limitRepository)
+        public LimitService(IUnitOfWork unitOfWork) 
         {
-            _limitRepository = limitRepository;
+            _unitOfWork = unitOfWork;
         }
-        public async Task CreateLimit(LimitRequest NewLimit)
+        public async Task<Result> CreateLimit(LimitRequest NewLimit) 
         {
+            if (NewLimit == null)
+            {
+                return Result.Failure("Limit data cannot be null.");
+            }
+
             var limit = LimitMapper.ToEntity(NewLimit);
-            await _limitRepository.AddAsync(limit);
-             Result.Success();
-   
+
+            await _unitOfWork.Limits.AddAsync(limit);
+
+            await _unitOfWork.CompleteAsync();
+
+            return Result.Success(); 
         }
 
-        public Task<Limit> GetLimitByScope(LimitScope scope)
+
+        public async Task<Result<Limit>> GetLimitByScope(LimitScope scope) 
         {
-            var limit = _limitRepository.GetLimitByScopeAsync(scope);
-            return limit;
+            var limit = await _unitOfWork.Limits.GetLimitByScopeAsync(scope);
+
+            if (limit == null)
+            {
+                return null; 
+            }
+
+            return Result<Limit>.Success(limit); 
         }
 
-        public Task<Limit> GetLimitsByType(LimitType type, LimitScope scope)
-        {
-            var limit = _limitRepository.GetLimitsByTypeAndScopeAsync(type, scope);
-            return limit;
-        }
-
-        public Task<Limit> GetLimitsByType(LimitType type)
+        public Task<Limit?> GetLimitByType(LimitType type)
         {
             throw new NotImplementedException();
         }
+
+        public async Task<Limit> GetLimitsByType(LimitType type, LimitScope scope)
+        {
+            var limit = await _unitOfWork.Limits.GetLimitsByTypeAndScopeAsync(type, scope);
+            return limit;
+        }
+
     }
 }
