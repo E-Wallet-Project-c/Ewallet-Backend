@@ -28,6 +28,10 @@
                 services.AddScoped<IProfileService, ProfileService>();
                 services.AddScoped<IProfileRepository, ProfileRepository>();
 
+                // Create UOW Service and Repository
+
+                services.AddScoped<IUnitOfWork, UnitOfWork>();
+
                 //Creaate Limit Service and repository
                 services.AddScoped<ILimitService, LimitService>();
                 services.AddScoped<ILimitRepository, LimitRepository>();
