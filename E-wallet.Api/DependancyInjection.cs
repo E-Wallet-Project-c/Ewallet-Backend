@@ -43,15 +43,19 @@
                 services.AddScoped<IJwtService, JwtService>();
                 //mapper 
                 services.AddSingleton<ProfileMapper>();
-                //Create UserBankAccount service and repository
-                services.AddScoped<IUserBankAccountService, UserBankAccountService>();
+            services.AddSingleton<BeneficiaryMapper>();
+            //Create UserBankAccount service and repository
+            services.AddScoped<IUserBankAccountService, UserBankAccountService>();
                 services.AddScoped<IUserBankAccountRepository, UserBankAccountRepository>();
 
                 services.AddScoped<ITransactionRepository, TransactionRepository>();
 
                 services.AddScoped<ITransferRepository, TransferRepository>();
+            // Create Beneficiary service and repository
+                services.AddScoped<IBeneficiaryService, BeneficiaryService>();
+                services.AddScoped<IBeneficiaryRepository, BeneficiaryRepository>();
 
-                return services;
+            return services;
             }
             public static IServiceCollection AddAuthentiactionAndAuthorization(this IServiceCollection services, IConfiguration configuration)
             {

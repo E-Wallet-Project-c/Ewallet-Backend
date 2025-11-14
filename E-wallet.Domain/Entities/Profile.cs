@@ -8,7 +8,7 @@ namespace E_wallet.Domain.Entities;
 
 [Table("Profile")]
 [Index("Phone", Name = "Unique-Values", IsUnique = true)]
-public partial class Profile
+public partial class Profile 
 {
     [Key]
     public int Id { get; set; }
