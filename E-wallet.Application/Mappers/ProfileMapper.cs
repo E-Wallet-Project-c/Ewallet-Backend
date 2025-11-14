@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace E_wallet.Application.Mappers
 {
-    public    class ProfileMapper
+    public  class ProfileMapper
     {
 
          public  Profile ToEntity(UserProfileRequest dto)
