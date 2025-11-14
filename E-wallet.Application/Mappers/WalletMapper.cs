@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace E_wallet.Application.Mappers
 {
-    public class WalletMapper
+    public static class WalletMapper
     {
-        public WalletResponse ToResponse(Wallet wallet) 
+        public static WalletResponse ToResponse(Wallet wallet) 
         {
             return new WalletResponse
             {
@@ -22,7 +22,7 @@ namespace E_wallet.Application.Mappers
         }
 
 
-        public List< WalletResponse> ToListResponse(List<Wallet> wallet) 
+        public static  List< WalletResponse> ToListResponse(List<Wallet> wallet) 
         {
             List < WalletResponse > wallets = new List<WalletResponse>();
             foreach (Wallet item in wallet)
@@ -37,7 +37,7 @@ namespace E_wallet.Application.Mappers
         }
 
 
-        public Wallet ToEntity(int _UserId,bool IsDefault )
+        public static Wallet ToEntity(int _UserId,bool IsDefault )
         {
             return new Wallet
             {

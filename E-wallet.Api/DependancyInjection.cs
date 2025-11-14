@@ -23,28 +23,28 @@
                 services.AddScoped<IUserService, UserService>();
                 services.AddScoped<IUserRepository, UserRepository>();
                 // Add MailingHelper as a singleton service
-                services.AddScoped<E_wallet.Domain.IHelpers.IEmailHelper, MailingHelper>();
-                //Create Profile service and repository
-                services.AddScoped<IProfileService, ProfileService>();
-                services.AddScoped<IProfileRepository, ProfileRepository>();
+                services.AddTransient<E_wallet.Domain.IHelpers.IEmailHelper, MailingHelper>();
+                
+            services.AddScoped<E_wallet.Domain.IHelpers.ISMSHelper, SMSHelper>();
+            //Create Profile service and repository
+            services.AddScoped<IProfileService, ProfileService>();
+            services.AddScoped<IProfileRepository, ProfileRepository>();
 
-                // Create UOW Service and Repository
-
-                services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-                //Creaate Limit Service and repository
+                //Create Limit Service and repository
                 services.AddScoped<ILimitService, LimitService>();
                 services.AddScoped<ILimitRepository, LimitRepository>();
                 // Repository for wallet
                 services.AddScoped<IWalletRepository, WalletRepository>();
                 services.AddScoped<ISessionRepository, SessionRepository>();
-                services.AddScoped<WalletMapper>();
+               
                 // Service for wallet
                 services.AddScoped<IWalletService, WalletService>();
-                services.AddScoped<WalletMapper>();
 
-                //Jwt Register
-                services.AddScoped<IJwtService, JwtService>();
+            //Create Notifications Service and repository
+            services.AddScoped<INotificationService,NotificationService>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
+            //Jwt Register
+            services.AddScoped<IJwtService, JwtService>();
                 //mapper 
                 services.AddSingleton<ProfileMapper>();
             services.AddSingleton<BeneficiaryMapper>();
@@ -59,6 +59,11 @@
                 services.AddScoped<IBeneficiaryService, BeneficiaryService>();
                 services.AddScoped<IBeneficiaryRepository, BeneficiaryRepository>();
 
+<<<<<<< Updated upstream
+                services.AddSignalR();
+
+=======
+>>>>>>> Stashed changes
             return services;
             }
             public static IServiceCollection AddAuthentiactionAndAuthorization(this IServiceCollection services, IConfiguration configuration)
@@ -106,6 +111,8 @@
                 services.AddValidatorsFromAssembly(typeof(RegisterRequestValidator).Assembly, includeInternalTypes: true);
                 services.AddValidatorsFromAssembly(typeof(UserProfileRequestValidator).Assembly, includeInternalTypes: true);
                 services.AddValidatorsFromAssembly(typeof(LimitValidator).Assembly, includeInternalTypes: true);
+                services.AddValidatorsFromAssembly(typeof(NotificationsValidator).Assembly, includeInternalTypes: true);
+                services.AddValidatorsFromAssembly(typeof(WalletValidator).Assembly, includeInternalTypes: true);
 
                 return services;
 

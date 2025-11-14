@@ -1,11 +1,14 @@
 ﻿using E_wallet.Application.Dtos.Request;
 using E_wallet.Application.Interfaces;
+
 using E_wallet.Application.Services;
 using E_wallet.Domain.Entities;
+using E_wallet.Domain.IHelpers;
 using E_wallet.Infrastrucure.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Twilio.TwiML.Voice;
 
 namespace E_wallet.Api.Controllers
 {
@@ -13,12 +16,22 @@ namespace E_wallet.Api.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+       
+
+       
 
         private readonly IUserService _userService;
+        private readonly ISMSHelper _sms;
 
-        public AuthController(IUserService userService)
+        private readonly IEmailHelper _IHelper;
+        
+
+        public AuthController(IUserService userService, ISMSHelper sms, IEmailHelper IHelper)
         {
             _userService = userService;
+            _sms = sms;
+            _IHelper = IHelper;
+        
         }
 
         //[HttpPost("login")]
@@ -153,6 +166,9 @@ namespace E_wallet.Api.Controllers
 
                 return Ok(new { message = result });
             }
+
+      
+
         private void SetRefreshTokenCookie(string refreshToken, DateTime expires)
         {
             var cookieOptions = new CookieOptions
@@ -165,7 +181,15 @@ namespace E_wallet.Api.Controllers
             Response.Cookies.Append("X-Refresh-Token", refreshToken, cookieOptions);
         }
 
-        private bool IsMobileClient()
+        [HttpPost("SendSMSmessage")]
+        public async Task<IActionResult> SendSMSmessage()
+        {
+            await _sms.SendSmsAsync("+962 7 9989 5351 ","Hello");
+            return Ok();
+        }
+
+
+        private bool IsMobileClient() 
         {
             return Request.Headers.TryGetValue("X-Client-Type", out var clientType) && clientType == "mobile";
         }

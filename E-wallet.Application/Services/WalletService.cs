@@ -1,17 +1,18 @@
 ﻿using E_wallet.Application.Dtos.Request;
 using E_wallet.Application.Dtos.Response;
+using E_wallet.Application.Dtos.SignalR;          // 👈 add this
 using E_wallet.Application.Interfaces;
 using E_wallet.Application.Mappers;
 using E_wallet.Domain.Entities;
 using E_wallet.Domain.Enums;
 using E_wallet.Domain.Interfaces;
 using E_wallet.Infrastrucure.Repositories;
-using Microsoft.AspNetCore.Server.IISIntegration;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Twilio.Http;
 
 namespace E_wallet.Application.Services
 {
@@ -20,34 +21,38 @@ namespace E_wallet.Application.Services
         private readonly IWalletRepository _walletRepo;
         private readonly ITransactionRepository _transactionRepo;
         private readonly IUserBankAccountRepository _userBankAccountRepo;
-        private readonly WalletMapper _mapper;
         private readonly ITransferRepository _transferRepository;
         private readonly ILimitRepository _limitRepository;
-
-        public WalletService(IWalletRepository walletRepo,
-            WalletMapper mapper,
+        private readonly INotificationService _notifications;
+        private readonly IHubContext<E_wallet.Applications.Hubs.AppHub> _hubContext;
+        private readonly IUserRepository _userRepository;
+        public WalletService(
+            IWalletRepository walletRepo,
             ITransactionRepository transactionRepo,
             IUserBankAccountRepository userBankAccountRepo,
             ITransferRepository transferRepository,
-            ILimitRepository limitRepository)
+            ILimitRepository limitRepository,
+            INotificationService notifications,
+            IHubContext<E_wallet.Applications.Hubs.AppHub> hubContext,
+            IUserRepository userRepository)
         {
             _walletRepo = walletRepo;
-            _mapper = mapper;
             _transactionRepo = transactionRepo;
             _userBankAccountRepo = userBankAccountRepo;
             _transferRepository = transferRepository;
             _limitRepository = limitRepository;
+            _notifications = notifications;
+            _hubContext = hubContext;
+            _userRepository= userRepository;
         }
 
         public async Task<WalletBalanceResponseDto?> GetWalletBalanceAsync(int walletId)
         {
-
             var wallet = await _walletRepo.GetWalletByIdAsync(walletId);
             if (wallet == null)
                 return null;
 
             var transactions = await _walletRepo.GetWalletTransactionsAsync(walletId);
-
             double balance = transactions.Sum(t => t.Type == TransactionType.Credit ? t.Amount : -t.Amount);
 
             return new WalletBalanceResponseDto
@@ -57,68 +62,69 @@ namespace E_wallet.Application.Services
                 Currency = wallet.Currency ?? "JD",
                 LastUpdated = wallet.UpdatedAt ?? wallet.CreatedAt ?? DateTime.UtcNow
             };
-
         }
 
-        public async Task<Result<WalletResponse>> CreateWallet(int UserId, WalletRequest NewWallet)
+        public async Task<Result<WalletResponse>> CreateWallet( WalletRequest newWallet)
         {
-            //get all wallets by user id
-            //checking if user already has a wallet
-            var wallet = await _walletRepo.GetWalletsByUserId(UserId);
-            NewWallet.IsDefault = true;
-            if (wallet.Count != 0)
+            var wallets = await _walletRepo.GetWalletsByUserId(newWallet.UserId);
+            newWallet.IsDefault = wallets.Count == 0;
+
+            var user = await _userRepository.GetByIdAsync(newWallet.UserId); 
+
+            if (user == null)
+                return Result<WalletResponse>.Failure("User not found.");
+
+            
+            var savedWallet = await _walletRepo.CreateWallet(WalletMapper.ToEntity(newWallet.UserId, newWallet.IsDefault));
+
+            // Notification
+            await _notifications.AddAndSendAsync(new NotificationRequest
             {
-                NewWallet.IsDefault = false;
-            }
+                UserId = newWallet.UserId,
+                Content = "You have created a wallet successfully.",
+                Event = "Wallet Creation",
+                Type = "InApp"
+            });
+            
+            
 
-            if (wallet.Count != 0)
-            {
-                return Result<WalletResponse>.Failure("User Already have Wallet");
-            }
-            NewWallet.UserId = UserId;
-            var savedWallet = await _walletRepo.CreateWallet(_mapper.ToEntity(NewWallet.UserId, NewWallet.IsDefault));
-
-            return Result<WalletResponse>.Success(_mapper.ToResponse(savedWallet));
-
+            return Result<WalletResponse>.Success(WalletMapper.ToResponse(savedWallet));
         }
-        public async Task<Result<WalletResponse>> GetUserWallets(WalletRequest NewWallet)
-        {
 
-            //getting all wallets by user id
-            var wallets = await _walletRepo.GetWalletsByUserId(NewWallet.UserId);
+        public async Task<Result<List<WalletResponse>>> GetUserWallets(int UserId)
+        {
+            var user = await _userRepository.GetByIdAsync(UserId);
+
+            if (user == null)
+                return  Result<List<WalletResponse >>.Failure("User not found.");
+
+            var wallets = await _walletRepo.GetWalletsByUserId(UserId);
             if (wallets.Count == 0)
             {
-                return Result<WalletResponse>.Failure("User has no wallets");
+                return Result<List<WalletResponse>>.Failure("User has no wallets");
             }
-            //transforming from Wallet entity to response DTO and returning the list
 
-            return Result<WalletResponse>.Success(_mapper.ToListResponse(wallets));
+            return Result<List<WalletResponse>>.Success(WalletMapper.ToListResponse(wallets));
 
         }
 
         #region TopUpToWalletAsync
+
         public async Task<Result<TopUpWithdrawResponse>> TopUpToWalletAsync(TopUpWithdrawRequest dto)
         {
-            //here we want to topup the wallet from the bank account , so we will add the balance to wallet 
-            //also need to add this as topup transaction
-
             Wallet wallet = await _walletRepo.GetWalletByIdAsync(dto.WalletId);
             if (wallet == null)
-                return Result<TopUpWithdrawResponse>.Failure("Wallet Not Exist");
+                return Result<TopUpWithdrawResponse>.Failure("Wallet not exist");
 
             UserBankAccount userBankAcc = await _userBankAccountRepo.GetByIdAsync(dto.UserBankAccountId);
             if (userBankAcc == null)
-                return Result<TopUpWithdrawResponse>.Failure("userBankAcc Not Exist");
-
-            if (userBankAcc.WalletId != dto.WalletId)
-                return Result<TopUpWithdrawResponse>.Failure("walletId not related to this bank account");
-
+                return Result<TopUpWithdrawResponse>.Failure("User bank account not exist");
 
             if (userBankAcc.Balance < dto.Balance)
                 return Result<TopUpWithdrawResponse>.Failure("Insufficient bank account balance");
 
-            //add transaction for adding balance to wallet  
-            var trans = await _transactionRepo.AddAsync(new Transaction
+            // Add credit transaction
+            await _transactionRepo.AddAsync(new Transaction
             {
                 WalletId = dto.WalletId,
                 Amount = dto.Balance,
@@ -128,52 +134,56 @@ namespace E_wallet.Application.Services
                 CreatedAt = DateTime.Now,
                 CreatedBy = null
             });
+
             var transactions = await _walletRepo.GetWalletTransactionsAsync(dto.WalletId);
             double walletBalance = transactions.Sum(t => t.Type == TransactionType.Credit ? t.Amount : -t.Amount);
 
-            //edit bank balance 
-            double BankAccBalance = userBankAcc.Balance;
-            BankAccBalance -= dto.Balance;
-            userBankAcc.Balance = BankAccBalance;
-            var userBankAccNew = await _userBankAccountRepo.EditAsync(userBankAcc);
+            // Edit bank balance
+            double bankAccBalance = userBankAcc.Balance;
+            bankAccBalance -= dto.Balance;
+            userBankAcc.Balance = bankAccBalance;
+            await _userBankAccountRepo.EditAsync(userBankAcc);
 
+            // Notification
+            await _notifications.AddAndSendAsync(new NotificationRequest
+            {
+                UserId = wallet.UserId,
+                Content = $"Your wallet has been topped up with {dto.Balance}. New wallet balance is {walletBalance}.",
+                Event = "Wallet Top-Up",
+                Type = "InApp"
+            });
+
+            
 
             return Result<TopUpWithdrawResponse>.Success(new TopUpWithdrawResponse
             {
                 UserBankAccountId = dto.UserBankAccountId,
                 NewBalance = walletBalance
             });
-
         }
+
         #endregion
 
-
-
-
         #region WithdrawFromWalletAsync
+
         public async Task<Result<TopUpWithdrawResponse>> WithdrawFromWalletAsync(TopUpWithdrawRequest dto)
         {
-            //here we want to withdraw from wallet to the bank account , so we will decrease balance from wallet 
-            //also need to add this as withdraw transaction
-
-
             Wallet wallet = await _walletRepo.GetWalletByIdAsync(dto.WalletId);
             if (wallet == null)
-                return Result<TopUpWithdrawResponse>.Failure("Wallet Not Exist");
+                return Result<TopUpWithdrawResponse>.Failure("Wallet not exist");
 
             UserBankAccount userBankAcc = await _userBankAccountRepo.GetByIdAsync(dto.UserBankAccountId);
             if (userBankAcc == null)
-                return Result<TopUpWithdrawResponse>.Failure("userBankAcc Not Exist");
-
-            if (userBankAcc.WalletId != dto.WalletId)
-                return Result<TopUpWithdrawResponse>.Failure("walletId not related to this bank account");
+                return Result<TopUpWithdrawResponse>.Failure("User bank account not exist");
 
             var transactions = await _walletRepo.GetWalletTransactionsAsync(dto.WalletId);
             double walletBalance = transactions.Sum(t => t.Type == TransactionType.Credit ? t.Amount : -t.Amount);
+
             if (walletBalance < dto.Balance)
-                return Result<TopUpWithdrawResponse>.Failure("Insufficient bank account balance");
-            //add transaction to decrease from wallet balance 
-            var trans = await _transactionRepo.AddAsync(new Transaction
+                return Result<TopUpWithdrawResponse>.Failure("Insufficient wallet balance");
+
+            // Add debit transaction
+            await _transactionRepo.AddAsync(new Transaction
             {
                 WalletId = dto.WalletId,
                 Amount = dto.Balance,
@@ -184,113 +194,165 @@ namespace E_wallet.Application.Services
                 CreatedBy = null
             });
 
-
-            double BankAccBalance = userBankAcc.Balance;
-            BankAccBalance += dto.Balance;
-            userBankAcc.Balance = BankAccBalance;
-
-            var userBankAccNew = await _userBankAccountRepo.EditAsync(userBankAcc);
-
+            // Update wallet balance
             var transactionsUpdated = await _walletRepo.GetWalletTransactionsAsync(dto.WalletId);
             double newWalletBalance = transactionsUpdated.Sum(t => t.Type == TransactionType.Credit ? t.Amount : -t.Amount);
+
+            // Update bank balance
+            double bankAccBalance = userBankAcc.Balance;
+            bankAccBalance += dto.Balance;
+            userBankAcc.Balance = bankAccBalance;
+            await _userBankAccountRepo.EditAsync(userBankAcc);
+
+            // Notification
+            await _notifications.AddAndSendAsync(new NotificationRequest
+            {
+                UserId = wallet.UserId,
+                Content = $"You have withdrawn {dto.Balance} from your wallet. New wallet balance is {newWalletBalance}.",
+                Event = "Wallet Withdrawal",
+                Type = "InApp"
+            });
 
             return Result<TopUpWithdrawResponse>.Success(new TopUpWithdrawResponse
             {
                 UserBankAccountId = dto.UserBankAccountId,
                 NewBalance = newWalletBalance
             });
-
         }
 
         #endregion
 
-
         #region TransferFromWalletAsync
+
         public async Task<Result<TransferResponse>> TransferFromWalletAsync(TransferRequest dto)
         {
             try
             {
-                //check daily limit
                 if (ExceedNumberOfDailyLimit(dto.SenderWalletId, DateTime.Now))
-                {
                     return Result<TransferResponse>.Failure("Daily number of transfer limit exceeded for the sender wallet.");
-                }
 
-                // check daily amount limit
                 if (ExceedDailyAmountLimit(dto.SenderWalletId, DateTime.Now, dto.Amount))
-                {
                     return Result<TransferResponse>.Failure("Daily amount transfer limit exceeded for the sender wallet.");
-                }
-                //here in the transfer we will send amount from sender to receiver , and add these two steps as transaction ,also we should add the fee as transaction
-                //1-add to transfer table 
-                //2-add to transaction table (receiver transaction , sender transaction , fee transaction)
 
-                //check the sender wallet id c
                 var senderWallet = await _walletRepo.GetWalletByIdAsync(dto.SenderWalletId);
                 if (senderWallet == null)
-                    return Result<TransferResponse>.Failure("sender wallet not exist");
-                //check receiver wallet id
+                    return Result<TransferResponse>.Failure("Sender wallet not exist");
+
                 var receiverWallet = await _walletRepo.GetWalletByIdAsync(dto.ReceiverWalletId);
                 if (receiverWallet == null)
-                    return Result<TransferResponse>.Failure("receiver wallet not exist");
-                //check if the sender wallet have the required amount balance 
-                var transactions = await _walletRepo.GetWalletTransactionsAsync(dto.SenderWalletId);
-                double walletBalance = transactions.Sum(t => t.Type == TransactionType.Credit ? t.Amount : -t.Amount);
-                if (walletBalance < dto.Amount)
+                    return Result<TransferResponse>.Failure("Receiver wallet not exist");
+
+                var senderTransactions = await _walletRepo.GetWalletTransactionsAsync(dto.SenderWalletId);
+                double senderBalance = senderTransactions.Sum(t => t.Type == TransactionType.Credit ? t.Amount : -t.Amount);
+
+                if (senderBalance < dto.Amount)
                     return Result<TransferResponse>.Failure("Insufficient amount in the sender balance");
 
-                //add to transfer table
-                Transfer transferReterned = await _transferRepository.AddTransfer(TransferMapper.ToTransferEntity(dto));
-                if (transferReterned == null)
-                    return Result<TransferResponse>.Failure("transfer failed");
+                // Add transfer
+                Transfer transferReturned = await _transferRepository.AddTransfer(TransferMapper.ToTransferEntity(dto));
+                if (transferReturned == null)
+                    return Result<TransferResponse>.Failure("Transfer failed");
 
-                //add to transaction table 
-                //1-add the sender transaction
-                await _transactionRepo.AddAsync(TransactionMapper.ToSenderEntity(transferReterned.Id, dto));
-                //2-add the receiver transaction
-                await _transactionRepo.AddAsync(TransactionMapper.ToReceiverEntity(transferReterned.Id, dto));
-                //2-add the fee transaction
-                await _transactionRepo.AddAsync(TransactionMapper.ToFeeEntity(transferReterned.Id, dto));
-                
-                return Result<TransferResponse>.Success(TransferMapper.ToTransferResponse(transferReterned.Id));
+                // Add transactions
+                await _transactionRepo.AddAsync(TransactionMapper.ToSenderEntity(transferReturned.Id, dto));
+                await _transactionRepo.AddAsync(TransactionMapper.ToReceiverEntity(transferReturned.Id, dto));
+                await _transactionRepo.AddAsync(TransactionMapper.ToFeeEntity(transferReturned.Id, dto));
 
+                // Recalculate balances
+                var updatedSenderTransactions = await _walletRepo.GetWalletTransactionsAsync(dto.SenderWalletId);
+                double newSenderBalance = updatedSenderTransactions.Sum(t => t.Type == TransactionType.Credit ? t.Amount : -t.Amount);
+
+                var updatedReceiverTransactions = await _walletRepo.GetWalletTransactionsAsync(dto.ReceiverWalletId);
+                double newReceiverBalance = updatedReceiverTransactions.Sum(t => t.Type == TransactionType.Credit ? t.Amount : -t.Amount);
+
+                // Notifications
+                await _notifications.AddAndSendAsync(new NotificationRequest
+                {
+                    UserId = senderWallet.UserId,
+                    Content = $"You have sent {dto.Amount} to wallet #{dto.ReceiverWalletId}. New balance: {newSenderBalance}.",
+                    Event = "Transfer Sent",
+                    Type = "InApp"
+                });
+
+                await _notifications.AddAndSendAsync(new NotificationRequest
+                {
+                    UserId = receiverWallet.UserId,
+                    Content = $"You have received {dto.Amount} from wallet #{dto.SenderWalletId}. New balance: {newReceiverBalance}.",
+                    Event = "Money Received",
+                    Type = "InApp"
+                });
+
+                await _hubContext.Clients
+                    .User(receiverWallet.UserId.ToString())
+                    .SendAsync("WalletUpdated", new WalletUpdatedDTO
+                    {
+                        UserId = receiverWallet.UserId,
+                        WalletId = receiverWallet.Id,
+                        Balance = newReceiverBalance,
+                    });
+
+
+
+                await _hubContext.Clients
+                    .User(receiverWallet.UserId.ToString())
+                    .SendAsync("MoneyReceived", new MoneyReceivedDTO
+                    {
+                        ReceiverUserId = receiverWallet.UserId,
+                        ReceiverWalletId = receiverWallet.Id,
+                        SenderUserId = senderWallet.UserId,
+                        Amount = dto.Amount,
+                        TransferId = transferReturned.Id
+                    });
+
+                return Result<TransferResponse>.Success(TransferMapper.ToTransferResponse(transferReturned.Id));
             }
             catch (Exception ex)
             {
-
                 return Result<TransferResponse>.Failure("Transfer failed: " + ex.Message);
-
             }
-
         }
+
         #endregion
 
         #region CheckDailyLimit
+
         private bool ExceedNumberOfDailyLimit(int walletId, DateTime date)
         {
-            var dailyLimit = _limitRepository.GetLimitsByTypeAndScopeAsync(LimitType.TRANSACTION_COUNT, LimitScope.DAILY);
+            var dailyLimitTask = _limitRepository.GetLimitsByTypeAndScopeAsync(LimitType.TRANSACTION_COUNT, LimitScope.DAILY);
+            if (dailyLimitTask == null)
+                return false;
+
+            var dailyLimit = dailyLimitTask.Result;
             if (dailyLimit == null)
-                return false; // No limit set
+                return false;
+
             int transactionsCount = _transactionRepo.GetAllByDay(walletId, date);
-            return transactionsCount >= dailyLimit.Result.Value;
+            return transactionsCount >= dailyLimit.Value;
         }
+
         #endregion
 
         #region CheckDailyAmountLimit
 
         private bool ExceedDailyAmountLimit(int walletId, DateTime date, double amount)
         {
-            var dailyAmountLimit = _limitRepository.GetLimitsByTypeAndScopeAsync(LimitType.AMOUNT, LimitScope.DAILY);
+            var dailyAmountLimitTask = _limitRepository.GetLimitsByTypeAndScopeAsync(LimitType.AMOUNT, LimitScope.DAILY);
+            if (dailyAmountLimitTask == null)
+                return false;
+
+            var dailyAmountLimit = dailyAmountLimitTask.Result;
             if (dailyAmountLimit == null)
-                return false; // No limit set
+                return false;
+
             decimal? totalAmount = _transactionRepo.GetTotalAmountByDay(walletId, date);
             if (!totalAmount.HasValue)
                 totalAmount = 0;
-            return ((double?)totalAmount + amount) > dailyAmountLimit.Result.Value;
+
+            return ((double?)totalAmount + amount) > dailyAmountLimit.Value;
+            //
+            //
         }
+
         #endregion
-
-
-
     }
 }
