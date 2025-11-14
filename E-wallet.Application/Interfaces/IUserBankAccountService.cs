@@ -12,6 +12,11 @@ namespace E_wallet.Application.Interfaces
     public interface IUserBankAccountService
     {
         Task<Result<UserBankAccountResponse>> CreateBankAsync(UserBankAccountRequest dto);
+        Task<Result<List<UserBankAccountResponse>>> GetAllByWalletIdAsync(int walletId);
+
+        
+
+
 
     }
 }

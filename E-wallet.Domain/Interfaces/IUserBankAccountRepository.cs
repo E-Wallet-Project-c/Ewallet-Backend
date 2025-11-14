@@ -10,5 +10,9 @@ namespace E_wallet.Domain.Interfaces
     public interface IUserBankAccountRepository
     {
         Task<UserBankAccount> AddAsync(UserBankAccount userBankAccount);
+        Task<UserBankAccount> EditAsync(UserBankAccount userBankAccount);
+        Task<UserBankAccount?> GetByIdAsync(int id);
+        Task<List<UserBankAccount>?> GetByWalletIdAsync(int walletId);
+
     }
 }

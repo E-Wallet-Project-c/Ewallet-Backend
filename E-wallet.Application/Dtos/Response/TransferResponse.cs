@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace E_wallet.Application.Dtos.Response
 {
-    public class UserBankAccountResponse
+    public class TransferResponse
     {
         public int Id { get; set; }
-        public string BankName { get; set; }
-        public double Balance { get; set; }
-        public int WalletId { get; set; }
-
+        public bool StatusTransfer { get; set; } = true;
     }
 }

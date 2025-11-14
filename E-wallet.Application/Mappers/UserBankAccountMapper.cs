@@ -27,6 +27,9 @@ namespace E_wallet.Application.Mappers
             return new UserBankAccountResponse
             {
                 Id = entity.Id,
+                BankName=entity.BankName,
+                Balance=entity.Balance,
+                WalletId=entity.WalletId
             };
         }
 

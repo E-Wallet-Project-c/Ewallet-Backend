@@ -17,7 +17,7 @@ public partial class Transfer
 
     public int ReciverWalletId { get; set; }
 
-    public int Amount { get; set; }
+    public double Amount { get; set; }
 
     [Column(TypeName = "character varying")]
     public TransferStatus Status { get; set; } = TransferStatus.Pending;

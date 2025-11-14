@@ -13,6 +13,8 @@ public partial class Wallet
     public int Id { get; set; }
 
     public int UserId { get; set; }
+    public double Balance { get; set; }
+
 
     [StringLength(50)]
     public string? Currency { get; set; }

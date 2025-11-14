@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 
 
 namespace E_wallet.Api
@@ -26,13 +27,18 @@ namespace E_wallet.Api
             builder.Services.AddConnections();
             builder.Services.AddEwalletServices();
 
+            builder.Services.ConfigureHttpJsonOptions(options =>
+            {
+                options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
             builder.Services.AddAuthentiactionAndAuthorization(builder.Configuration);
             builder.Services.AddApiServices();
             var app = builder.Build();
 
+
             app.UseAuthentication();
             app.UseAuthorization();
-
+       
             app.UseSwagger();
             app.UseSwaggerUI();
             //app.UseSwaggerUI(c =>

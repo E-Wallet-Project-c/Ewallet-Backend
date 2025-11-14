@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace E_wallet.Domain.Enums
 {
-    public enum TransactionAction
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+
+    public enum LimitScope
     {
-        TopUp,   
-        Withdraw, 
-        Send,
-        Receive,
-        Fee      
+        DAILY,
+        WEEKLY,
+        MONTHLY
     }
 }
