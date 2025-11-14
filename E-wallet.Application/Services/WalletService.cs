@@ -110,6 +110,10 @@ namespace E_wallet.Application.Services
             if (userBankAcc == null)
                 return Result<TopUpWithdrawResponse>.Failure("userBankAcc Not Exist");
 
+            if (userBankAcc.WalletId != dto.WalletId)
+                return Result<TopUpWithdrawResponse>.Failure("walletId not related to this bank account");
+
+
             if (userBankAcc.Balance < dto.Balance)
                 return Result<TopUpWithdrawResponse>.Failure("Insufficient bank account balance");
 
@@ -160,6 +164,9 @@ namespace E_wallet.Application.Services
             UserBankAccount userBankAcc = await _userBankAccountRepo.GetByIdAsync(dto.UserBankAccountId);
             if (userBankAcc == null)
                 return Result<TopUpWithdrawResponse>.Failure("userBankAcc Not Exist");
+
+            if (userBankAcc.WalletId != dto.WalletId)
+                return Result<TopUpWithdrawResponse>.Failure("walletId not related to this bank account");
 
             var transactions = await _walletRepo.GetWalletTransactionsAsync(dto.WalletId);
             double walletBalance = transactions.Sum(t => t.Type == TransactionType.Credit ? t.Amount : -t.Amount);
