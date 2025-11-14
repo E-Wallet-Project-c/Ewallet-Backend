@@ -10,51 +10,35 @@ namespace E_wallet.Application.Services
 {
     public class LimitService : ILimitService
     {
-        private readonly IUnitOfWork _unitOfWork; 
+        private readonly ILimitRepository _limitRepository;
 
-        public LimitService(IUnitOfWork unitOfWork) 
+        public LimitService(ILimitRepository limitRepository)
         {
-            _unitOfWork = unitOfWork;
+            _limitRepository = limitRepository;
         }
-        public async Task<Result> CreateLimit(LimitRequest NewLimit) 
+        public async Task CreateLimit(LimitRequest NewLimit)
         {
-            if (NewLimit == null)
-            {
-                return Result.Failure("Limit data cannot be null.");
-            }
-
             var limit = LimitMapper.ToEntity(NewLimit);
-
-            await _unitOfWork.Limits.AddAsync(limit);
-
-            await _unitOfWork.CompleteAsync();
-
-            return Result.Success(); 
+            await _limitRepository.AddAsync(limit);
+             Result.Success();
+   
         }
 
-
-        public async Task<Result<Limit>> GetLimitByScope(LimitScope scope) 
+        public Task<Limit> GetLimitByScope(LimitScope scope)
         {
-            var limit = await _unitOfWork.Limits.GetLimitByScopeAsync(scope);
-
-            if (limit == null)
-            {
-                return null; 
-            }
-
-            return Result<Limit>.Success(limit); 
-        }
-
-        public Task<Limit?> GetLimitByType(LimitType type)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<Limit> GetLimitsByType(LimitType type, LimitScope scope)
-        {
-            var limit = await _unitOfWork.Limits.GetLimitsByTypeAndScopeAsync(type, scope);
+            var limit = _limitRepository.GetLimitByScopeAsync(scope);
             return limit;
         }
 
+        public Task<Limit> GetLimitsByType(LimitType type, LimitScope scope)
+        {
+            var limit = _limitRepository.GetLimitsByTypeAndScopeAsync(type, scope);
+            return limit;
+        }
+
+        public Task<Limit> GetLimitsByType(LimitType type)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

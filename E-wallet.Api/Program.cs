@@ -1,4 +1,5 @@
 
+
 using E_wallet.Application.Interfaces;
 using E_wallet.Application.Mappers;
 using E_wallet.Application.Services;
@@ -33,6 +34,8 @@ namespace E_wallet.Api
             });
             builder.Services.AddAuthentiactionAndAuthorization(builder.Configuration);
             builder.Services.AddApiServices();
+
+         
             var app = builder.Build();
 
 
@@ -54,7 +57,9 @@ namespace E_wallet.Api
             app.UseAuthorization();
 
 
-            app.MapControllers();
+            app.MapControllers(); 
+
+            app.MapHub<E_wallet.Applications.Hubs.AppHub>("/hubs/AppHub");
 
             app.Run();
         }
