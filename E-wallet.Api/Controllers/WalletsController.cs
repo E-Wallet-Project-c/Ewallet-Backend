@@ -5,7 +5,9 @@ using E_wallet.Application.Services;
 using E_wallet.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Twilio.TwiML.Voice;
 
 namespace E_wallet.Api.Controllers
 {
@@ -32,12 +34,12 @@ namespace E_wallet.Api.Controllers
             return Ok(balanceDto);
         }
 
-        [HttpPost("CreatWallet{UserId}")]
-        public async Task<ActionResult> CreatWallet (int UserId, WalletRequest NewWallet)
+        [HttpPost("CreatWallet")]
+        public async Task<ActionResult> CreatWallet ( WalletRequest NewWallet)
         {
             try
             {
-                var response = await _walletService.CreateWallet( UserId, NewWallet);
+                var response = await _walletService.CreateWallet(NewWallet);
 
                 if (!response.IsSuccess)
                 {
@@ -55,11 +57,11 @@ namespace E_wallet.Api.Controllers
         }
 
         [HttpGet("GetUserWallets{UserId}")]
-        public async Task<ActionResult> GetUserWallets( WalletRequest NewWallet)
+        public async Task<ActionResult> GetUserWallets( [FromRoute]int UserId)
         {
             try
             {
-                var response = await _walletService.GetUserWallets(NewWallet);
+                var response = await _walletService.GetUserWallets(UserId);
                 if (!response.IsSuccess)
                 {
                     return NotFound( response.ErrorMessage );
@@ -108,5 +110,6 @@ namespace E_wallet.Api.Controllers
 
             return Ok(response);
         }
+
     }
 }

@@ -10,6 +10,7 @@ namespace E_wallet.Domain.Entities;
 public partial class Notification
 {
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     public int UserId { get; set; }
@@ -25,7 +26,7 @@ public partial class Notification
 
     public bool? IsRead { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; }   
 
     [StringLength(50)]
     public string? CreatedBy { get; set; }
@@ -36,7 +37,7 @@ public partial class Notification
     [Column(TypeName = "time with time zone")]
     public DateTimeOffset? UpdatedAt { get; set; }
 
-    public bool? IsActive { get; set; }
+    public bool? IsActive { get; set; } 
 
     [ForeignKey("UserId")]
     [InverseProperty("Notifications")]
