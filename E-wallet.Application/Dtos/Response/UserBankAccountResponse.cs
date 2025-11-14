@@ -9,6 +9,9 @@ namespace E_wallet.Application.Dtos.Response
     public class UserBankAccountResponse
     {
         public int Id { get; set; }
-      
+        public string BankName { get; set; }
+        public double Balance { get; set; }
+        public int WalletId { get; set; }
+
     }
 }

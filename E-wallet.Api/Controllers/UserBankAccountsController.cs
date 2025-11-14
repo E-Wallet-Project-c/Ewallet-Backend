@@ -5,6 +5,7 @@ using E_wallet.Application.Services;
 using E_wallet.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SendGrid;
 
 namespace E_wallet.Api.Controllers
 {
@@ -20,7 +21,7 @@ namespace E_wallet.Api.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("Create-User-Bank-Account")]
         public async Task<IActionResult> CreateUserBankAccount([FromBody] UserBankAccountRequest request)
         {
             var response = await _userBankAccountService.CreateBankAsync(request);
@@ -31,6 +32,18 @@ namespace E_wallet.Api.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("Get-All-User-Bank-Account/{walletId}")]
+        public async Task<IActionResult> GetAllByWalletIdAsync(int walletId)
+        {
+            var response = await _userBankAccountService.GetAllByWalletIdAsync(walletId);
+            if (!response.IsSuccess)
+                return BadRequest(response);
+
+
+            return Ok(response);
+        }
+
 
     }
 }

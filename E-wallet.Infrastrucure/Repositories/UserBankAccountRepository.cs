@@ -21,10 +21,38 @@ namespace E_wallet.Infrastrucure.Repositories
 
         public async Task<UserBankAccount> AddAsync(UserBankAccount userBankAccount)
         {
-            _context.UserBankAccounts.Add(userBankAccount);
-            _context.SaveChangesAsync();
+           var userBank= await _context.UserBankAccounts.AddAsync(userBankAccount);
+            await _context.SaveChangesAsync();
+            userBankAccount.Id = userBank.Entity.Id;
             return userBankAccount;
         }
-    }
 
+
+        public async Task<UserBankAccount> EditAsync(UserBankAccount userBankAccount)
+        {
+             _context.UserBankAccounts.Update(userBankAccount);
+            await _context.SaveChangesAsync();
+            return userBankAccount;
+
+        }
+
+
+
+        public async Task<UserBankAccount?> GetByIdAsync(int id)
+        {
+            return await _context.UserBankAccounts.FirstOrDefaultAsync(U => U.Id == id);
+        }
+
+        public async Task<List<UserBankAccount>> GetByWalletIdAsync(int walletId)
+        {
+            return await _context.UserBankAccounts
+                .Include(u => u.Wallet)
+                .AsNoTracking()
+                .Where(u => u.WalletId == walletId)
+                .ToListAsync();
+        }
+
+    }
 }
+
+

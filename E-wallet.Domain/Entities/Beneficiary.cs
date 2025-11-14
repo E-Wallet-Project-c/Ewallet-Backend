@@ -1,8 +1,9 @@
-﻿using System;
+﻿using E_wallet.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace E_wallet.Domain.Entities;
 
@@ -19,8 +20,8 @@ public partial class Beneficiary
     [StringLength(50)]
     public string NickName { get; set; } = null!;
 
-    [StringLength(50)]
-    public string? Purpos { get; set; }
+    [Column(TypeName = "character varying")]
+    public BeneficiaryPurpose? Purpos { get; set; }
 
     public bool? IsActive { get; set; }
 
