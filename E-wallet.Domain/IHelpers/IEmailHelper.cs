@@ -9,5 +9,7 @@ namespace E_wallet.Domain.IHelpers
     public interface IEmailHelper
     {
         Task SendOtpEmailAsync(string email, string otp);
+        Task SendOtpEmailAsync(string email, string otp, string UserName);
+        Task SendEmailAsync(string email, string EmailSubject, string EmailContent, string UserName);
     }
 }
