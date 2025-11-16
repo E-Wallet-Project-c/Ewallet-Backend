@@ -60,6 +60,7 @@
                 services.AddScoped<IBeneficiaryRepository, BeneficiaryRepository>();
 
                 services.AddSignalR();
+
             return services;
             }
             public static IServiceCollection AddAuthentiactionAndAuthorization(this IServiceCollection services, IConfiguration configuration)
