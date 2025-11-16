@@ -59,11 +59,7 @@
                 services.AddScoped<IBeneficiaryService, BeneficiaryService>();
                 services.AddScoped<IBeneficiaryRepository, BeneficiaryRepository>();
 
-<<<<<<< Updated upstream
                 services.AddSignalR();
-
-=======
->>>>>>> Stashed changes
             return services;
             }
             public static IServiceCollection AddAuthentiactionAndAuthorization(this IServiceCollection services, IConfiguration configuration)

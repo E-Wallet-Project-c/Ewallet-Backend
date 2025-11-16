@@ -19,23 +19,13 @@ namespace E_wallet.Api.Controllers
         [HttpPost("Create-Beneficiary")]
         public async Task<IActionResult> CreateBeneficiary(BeneficiaryRequest beneficiary)
         {
-            try
-            {
+          
 
                 var response = await _beneficiaryService.CreateBeneficiary(beneficiary);
-                if (!response.IsSuccess)
-                {
-                    return BadRequest(new { message = response.ErrorMessage });
-                }
+          
                 return Ok(response);
 
 
-
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
         }
 
 
