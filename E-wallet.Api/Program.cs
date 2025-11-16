@@ -16,7 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
 
-
+using E_wallet.Api.Midleware;
 namespace E_wallet.Api
 {
     public class Program
@@ -55,11 +55,12 @@ namespace E_wallet.Api
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
+            app.UseMiddleware<ResponseWrapperMiddleware>();
 
             app.MapControllers(); 
 
             app.MapHub<E_wallet.Applications.Hubs.AppHub>("/hubs/AppHub");
+
 
             app.Run();
         }

@@ -12,7 +12,7 @@ namespace E_wallet.Application.Interfaces
     public interface IBeneficiaryService
     {
      
-            Task<Result<BeneficiaryResponse>> CreateBeneficiary(BeneficiaryRequest beneficiary);//done
+            Task<BeneficiaryResponse>CreateBeneficiary(BeneficiaryRequest beneficiary);//done
             Task<Result<BeneficiaryResponse>> GetBeneficiaryById(int beneficiaryId);//done
             Task<Result<IEnumerable<BeneficiaryResponse>>> GetAllBeneficiariesByWalletId(int walletId);//done 
             Task<Result<BeneficiaryResponse>> UpdateBeneficiary(BeneficiaryRequest beneficiary);

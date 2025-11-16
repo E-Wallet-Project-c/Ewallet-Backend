@@ -11,7 +11,7 @@ namespace E_wallet.Api.Controllers
     public class LimitController : ControllerBase
     {
         private readonly ILimitService _limitService;
-        public LimitController(ILimitService limitService) 
+        public LimitController(ILimitService limitService)
         {
             _limitService = limitService;
         }
