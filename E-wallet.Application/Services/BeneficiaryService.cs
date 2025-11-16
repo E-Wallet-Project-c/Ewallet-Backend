@@ -26,17 +26,19 @@ namespace E_wallet.Application.Services
             _beneficiaryMapper = beneficiaryMapper;
             _walletRepository = walletRepository;
         }
-        public async Task<Result<BeneficiaryResponse>> CreateBeneficiary(BeneficiaryRequest beneficiary)
+        public async Task<BeneficiaryResponse> CreateBeneficiary(BeneficiaryRequest beneficiary)
         {
             var existing = await _beneficiaryRepository.GetByBeneficiaryWalletIdAsync(beneficiary.BeneficiaryWalletId);
             if (existing != null)
             {
-                return Result<BeneficiaryResponse>.Failure("Beneficiary already exists");
+     
+                throw new Exception("Beneficiary already exists");
             }
-            var Beneficiary = _beneficiaryMapper.ToEntity(beneficiary);
-            await _beneficiaryRepository.AddAsync(Beneficiary);
-            var response = _beneficiaryMapper.ToResponseBeneficiary(Beneficiary);
-            return Result<BeneficiaryResponse>.Success(response);
+
+            var entity = _beneficiaryMapper.ToEntity(beneficiary);
+            await _beneficiaryRepository.AddAsync(entity);
+
+            return _beneficiaryMapper.ToResponseBeneficiary(entity);
         }
 
 
