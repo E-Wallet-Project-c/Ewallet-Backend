@@ -17,6 +17,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 
 using E_wallet.Api.Midleware;
+using E_wallet.Api.Exceptions;
 namespace E_wallet.Api
 {
     public class Program
@@ -27,6 +28,9 @@ namespace E_wallet.Api
             builder.Services.AddConectionString(builder.Configuration);
             builder.Services.AddConnections();
             builder.Services.AddEwalletServices();
+            builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+            builder.Services.AddProblemDetails();
 
             builder.Services.ConfigureHttpJsonOptions(options =>
             {
@@ -38,6 +42,7 @@ namespace E_wallet.Api
          
             var app = builder.Build();
 
+            app.UseExceptionHandler();
 
             app.UseAuthentication();
             app.UseAuthorization();

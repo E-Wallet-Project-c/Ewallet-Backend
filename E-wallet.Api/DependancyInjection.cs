@@ -25,10 +25,10 @@
                 // Add MailingHelper as a singleton service
                 services.AddTransient<E_wallet.Domain.IHelpers.IEmailHelper, MailingHelper>();
                 
-            services.AddScoped<E_wallet.Domain.IHelpers.ISMSHelper, SMSHelper>();
-            //Create Profile service and repository
-            services.AddScoped<IProfileService, ProfileService>();
-            services.AddScoped<IProfileRepository, ProfileRepository>();
+                services.AddScoped<E_wallet.Domain.IHelpers.ISMSHelper, SMSHelper>();
+                //Create Profile service and repository
+                services.AddScoped<IProfileService, ProfileService>();
+                services.AddScoped<IProfileRepository, ProfileRepository>();
 
                 //Create Limit Service and repository
                 services.AddScoped<ILimitService, LimitService>();
@@ -114,6 +114,21 @@
                 return services;
 
             }
+
+        
+        public static IServiceCollection AddProblemDetails(this IServiceCollection services)
+                {
+                    services.AddProblemDetails(options =>
+                    {
+                        options.CustomizeProblemDetails = (context) =>
+                        {
+                            context.ProblemDetails.Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Method}";
+                            context.ProblemDetails.Extensions["traceId"] = context.HttpContext.TraceIdentifier;
+                        };
+                    });
+                     return services;
+            }
+
             public static IServiceCollection AddConectionString(this IServiceCollection services, IConfiguration configuration)
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
