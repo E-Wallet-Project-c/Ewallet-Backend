@@ -3,29 +3,22 @@ using E_wallet.Application.Dtos.Request.Auth;
 using E_wallet.Application.Dtos.Response;
 using E_wallet.Application.Interfaces;
 using E_wallet.Application.Mappers;
-using E_wallet.Application.Validators;
 using E_wallet.Domain.Entities;
 using E_wallet.Domain.IHelpers;
 using E_wallet.Domain.Interfaces;
-using E_wallet.Infrastrucure.Helpers;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace E_wallet.Application.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+
         private readonly IEmailHelper _emailHelper;
         private readonly IJwtService _jwtService;
         private readonly ISessionRepository _sessionRepository;
-        public UserService(IUserRepository userRepository, IEmailHelper mailingHelper, IJwtService jwtService, ISessionRepository sessionRepository)
+        public UserService(IUserRepository userRepository,
+            IEmailHelper mailingHelper,
+            IJwtService jwtService,
+            ISessionRepository sessionRepository)
         {
             _userRepository = userRepository;
             _emailHelper = mailingHelper;
@@ -35,6 +28,7 @@ namespace E_wallet.Application.Services
 
         public async Task<UserRegisterResponse> RegisterUserAsync(UserRegisterRequest dto)
         {
+
             var existingUser = await _userRepository.GetByEmailAsync(dto.Email);
             if (existingUser != null)
             {
