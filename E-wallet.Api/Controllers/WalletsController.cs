@@ -41,10 +41,7 @@ namespace E_wallet.Api.Controllers
             {
                 var response = await _walletService.CreateWallet(NewWallet);
 
-                if (!response.IsSuccess)
-                {
-                    return BadRequest(response.ErrorMessage);
-                }
+              
 
                 return Ok(response);
             }
@@ -62,10 +59,7 @@ namespace E_wallet.Api.Controllers
             try
             {
                 var response = await _walletService.GetUserWallets(UserId);
-                if (!response.IsSuccess)
-                {
-                    return NotFound( response.ErrorMessage );
-                }
+            
                 return Ok(response);
             }
             catch (Exception ex) {

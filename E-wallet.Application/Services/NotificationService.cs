@@ -40,40 +40,38 @@ namespace E_wallet.Application.Services
             _hubContext = hubContext;
         }
 
-        #region Basic CRUD
 
-        public async Task<Result<NotificationResponse>> AddNotification(NotificationRequest notification)
+        public async Task<NotificationResponse?> AddNotification(NotificationRequest notification)
         {
             if (await _userRepository.GetByIdAsync(notification.UserId)==null)
             {
-                return Result<NotificationResponse>.Failure("No user with the inserted Id");
+                return null;
             }
             var entity = NotificationMapper.ToNotificationEntity(notification);
             var saved = await _notificationRepository.AddNotification(entity);
 
             if (saved is null)
-                return Result<NotificationResponse>.Failure("Something went wrong and the notification is not added, try again!");
+                return null ;
 
-            return Result<NotificationResponse>.Success(NotificationMapper.ToNotificationDto(saved));
+            return NotificationMapper.ToNotificationDto(saved);
         }
 
-        public async Task<Result<List<NotificationResponse>>> GetAllNotifications()
+        public async Task<List<NotificationResponse>?> GetAllNotifications()
         {
             var notifications = await _notificationRepository.GetAllNotifications();
 
             if ( notifications.Count == 0)
-                return Result<List<NotificationResponse>>.Failure("No notifications are available!");
+                return null;
 
-            return Result<List<NotificationResponse>>.Success(
-                NotificationMapper.ToNotificationDtoList(notifications));
+            return  NotificationMapper.ToNotificationDtoList(notifications);
         }
 
 
-        public async Task<Result<List<NotificationResponse>>> GetUserNotifications(int UserId, string? Type)
+        public async Task<List<NotificationResponse>?> GetUserNotifications(int UserId, string? Type)
         {
             if (await _userRepository.GetByIdAsync(UserId) == null)
             {
-                return Result<List<NotificationResponse>>.Failure("No user with the inserted Id");
+                return null;
             }
 
             List<Notification> notifications;
@@ -84,24 +82,23 @@ namespace E_wallet.Application.Services
                 notifications = await _notificationRepository.GetByUserIdAndType(UserId, Type);
 
             if ( notifications.Count == 0)
-                return Result<List<NotificationResponse>>.Failure("This user has no notifications");
+                return null;
 
-            return Result<List<NotificationResponse>>.Success(
-                NotificationMapper.ToNotificationDtoList(notifications));
+            return NotificationMapper.ToNotificationDtoList(notifications);
         }
 
 
-        public async Task<Result<NotificationResponse>> UpdateUserNotifications(int Id, NotificationRequest request)
+        public async Task<NotificationResponse?> UpdateUserNotifications(int Id, NotificationRequest request)
         {
 
             if (await _notificationRepository.GetById(Id) == null)
             {
-                return Result<NotificationResponse>.Failure("No notification with this Id");
+                return null;
             }
 
             if (await _userRepository.GetByIdAsync(request.UserId) == null)
             {
-                return Result<NotificationResponse>.Failure("No user with the inserted Id");
+                return null;
             }
 
             var entity = NotificationMapper.ToNotificationEntity(request);
@@ -110,60 +107,57 @@ namespace E_wallet.Application.Services
             var updated = await _notificationRepository.UpdateNotification(entity);
 
             if (updated == null)
-                return Result<NotificationResponse>.Failure("Something went wrong and the notification is not updated, try again!");
+                return null;
 
-            return Result<NotificationResponse>.Success(
-                NotificationMapper.ToNotificationDto(updated));
+            return NotificationMapper.ToNotificationDto(updated);
         }
 
-        public async Task<Result<NotificationResponse>> DeleteUserNotification(int Id)
+        public async Task<NotificationResponse?> DeleteUserNotification(int Id)
         {
             if (await _notificationRepository.GetById(Id) == null)
             {
-                return Result<NotificationResponse>.Failure("No notification with this Id");
+                return null;
             }
 
             var deleted = await _notificationRepository.DeleteNotification(Id);
 
             if (deleted == null)
-                return Result<NotificationResponse>.Failure("Something went wrong and the notification is not deleted, try again!");
+                return null;
 
-            return Result<NotificationResponse>.Success(
-                NotificationMapper.ToNotificationDto(deleted));
+            return 
+                NotificationMapper.ToNotificationDto(deleted);
         }
 
-        public async Task<Result<NotificationResponse>> GetById(int Id)
+        public async Task<NotificationResponse?> GetById(int Id)
         {
             var notification = await _notificationRepository.GetById(Id);
 
             if (notification == null)
-                return Result<NotificationResponse>.Failure("No notification with this Id.");
+                return null;
 
             // mark as read
 
             notification.IsRead = true;
 
-            return Result<NotificationResponse>.Success(
-                NotificationMapper.ToNotificationDto(await _notificationRepository.UpdateNotification(notification)));
+            return 
+                NotificationMapper.ToNotificationDto(await _notificationRepository.UpdateNotification(notification));
         }
 
-        #endregion
+      
 
-        #region AddAndSendAsync (InApp + Email + SMS)
-
-        public async Task<Result> AddAndSendAsync(NotificationRequest request)
+        public async Task AddAndSendAsync(NotificationRequest request)
         {
             var notifications = new List<Notification>();
 
             var profile = await _profileRepository.GetByUserIdAsync(request.UserId);
 
             if (profile == null)
-                return Result.Failure("User profile not found.");
+                return;
 
             var user = await _userRepository.GetByIdAsync(request.UserId); 
 
             if (user == null)
-                return Result.Failure("User not found.");
+                return ;
 
             var inAppNotification = NotificationMapper.ToNotificationEntity(request);
             inAppNotification.Type = "InApp";
@@ -172,7 +166,7 @@ namespace E_wallet.Application.Services
             var inAppSaved = await _notificationRepository.AddNotification(inAppNotification);
 
             if (inAppSaved is null)
-                return Result.Failure("Failed to save in-app notification.");
+                return;
 
             notifications.Add(inAppSaved);
 
@@ -185,7 +179,7 @@ namespace E_wallet.Application.Services
 
                 var emailSaved = await _notificationRepository.AddNotification(emailNotification);
                 if (emailSaved is null)
-                    return Result.Failure("Failed to save email notification.");
+                    return ;
 
                 notifications.Add(emailSaved);
 
@@ -207,7 +201,7 @@ namespace E_wallet.Application.Services
 
                 var smsSaved = await _notificationRepository.AddNotification(smsNotification);
                 if (smsSaved is null)
-                    return Result.Failure("Failed to save SMS notification.");
+                    return ;
 
                 notifications.Add(smsSaved);
                 await _hubContext.Clients
@@ -222,10 +216,8 @@ namespace E_wallet.Application.Services
                 }
             }
             
-            // 5) Return list
-            return Result.Success();
         }
 
-        #endregion
+
     }
 }

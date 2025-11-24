@@ -64,7 +64,7 @@ namespace E_wallet.Application.Services
             };
         }
 
-        public async Task<Result<WalletResponse>> CreateWallet( WalletRequest newWallet)
+        public async Task<WalletResponse?> CreateWallet( WalletRequest newWallet)
         {
             var wallets = await _walletRepo.GetWalletsByUserId(newWallet.UserId);
             newWallet.IsDefault = wallets.Count == 0;
@@ -72,7 +72,7 @@ namespace E_wallet.Application.Services
             var user = await _userRepository.GetByIdAsync(newWallet.UserId); 
 
             if (user == null)
-                return Result<WalletResponse>.Failure("User not found.");
+                return null;
 
             
             var savedWallet = await _walletRepo.CreateWallet(WalletMapper.ToEntity(newWallet.UserId, newWallet.IsDefault));
@@ -88,23 +88,23 @@ namespace E_wallet.Application.Services
             
             
 
-            return Result<WalletResponse>.Success(WalletMapper.ToResponse(savedWallet));
+            return WalletMapper.ToResponse(savedWallet);
         }
 
-        public async Task<Result<List<WalletResponse>>> GetUserWallets(int UserId)
+        public async Task<List<WalletResponse>> GetUserWallets(int UserId)
         {
             var user = await _userRepository.GetByIdAsync(UserId);
 
             if (user == null)
-                return  Result<List<WalletResponse >>.Failure("User not found.");
+                return null;
 
             var wallets = await _walletRepo.GetWalletsByUserId(UserId);
             if (wallets.Count == 0)
             {
-                return Result<List<WalletResponse>>.Failure("User has no wallets");
+                return null;
             }
 
-            return Result<List<WalletResponse>>.Success(WalletMapper.ToListResponse(wallets));
+            return WalletMapper.ToListResponse(wallets);
 
         }
 
