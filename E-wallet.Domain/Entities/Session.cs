@@ -17,6 +17,7 @@ public partial class Session
     [Column(TypeName = "character varying")]
     public string? RefreshToken { get; set; }
 
+    public bool? IsDeleted { get; set; }
     public bool? IsActive { get; set; }
 
     [Column(TypeName = "timestamp with time zone")]

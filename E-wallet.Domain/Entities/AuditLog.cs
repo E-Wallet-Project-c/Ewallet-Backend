@@ -25,6 +25,9 @@ public partial class AuditLog
 
     public bool? IsActive { get; set; }
 
+    public bool? IsDeleted { get; set; }
+
+
     public TimeOnly? CreatedAt { get; set; }
 
     [StringLength(50)]

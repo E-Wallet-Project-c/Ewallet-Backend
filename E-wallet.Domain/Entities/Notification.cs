@@ -34,7 +34,10 @@ public partial class Notification
     [Column(TypeName = "time with time zone")]
     public DateTimeOffset? UpdatedAt { get; set; }
 
-    public bool? IsActive { get; set; } 
+    public bool? IsActive { get; set; }
+
+    public bool? IsDeleted { get; set; }
+
 
     [ForeignKey("UserId")]
     [InverseProperty("Notifications")]

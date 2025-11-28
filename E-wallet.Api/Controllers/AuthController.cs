@@ -184,13 +184,7 @@ namespace E_wallet.Api.Controllers
             Response.Cookies.Append("X-Refresh-Token", refreshToken, cookieOptions);
         }
 
-        [HttpPost("SendSMSmessage")]
-        public async Task<IActionResult> SendSMSmessage()
-        {
-            await _sms.SendSmsAsync("+962 7 9989 5351 ","Hello");
-            return Ok();
-        }
-
+   
 
         private bool IsMobileClient() 
         {

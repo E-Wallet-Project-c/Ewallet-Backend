@@ -23,6 +23,8 @@ public partial class Limit
     public double Value { get; set; }
 
     public bool? IsActive { get; set; }
+    public bool? IsDeleted { get; set; }
+
 
     public TimeOnly? CreatedAt { get; set; }
 
