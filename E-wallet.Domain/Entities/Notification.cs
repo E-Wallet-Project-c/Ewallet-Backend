@@ -21,9 +21,6 @@ public partial class Notification
     [StringLength(50)]
     public string Event { get; set; } = null!;
 
-    [StringLength(50)]
-    public string Type { get; set; } = null!;
-
     public bool? IsRead { get; set; }
 
     public DateTime? CreatedAt { get; set; }   

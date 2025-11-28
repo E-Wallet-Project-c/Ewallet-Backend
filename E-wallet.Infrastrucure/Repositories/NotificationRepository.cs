@@ -54,7 +54,7 @@ namespace E_wallet.Infrastrucure.Repositories
         {
             return await _Context.Notifications
                 .AsNoTracking()
-                .Where(n => n.UserId == userId && n.Type == Type && n.IsActive == true)
+                .Where(n => n.UserId == userId&& n.IsActive == true)
                 .ToListAsync();
         }
 

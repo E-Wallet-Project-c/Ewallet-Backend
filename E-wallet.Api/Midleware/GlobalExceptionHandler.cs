@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using FluentValidation; // Add this using directive
-namespace E_wallet.Api.Exceptions
+using FluentValidation;
+namespace E_wallet.Api.Midleware
 {
     public class GlobalExceptionHandler(IProblemDetailsService problemDetailsService)
         : IExceptionHandler

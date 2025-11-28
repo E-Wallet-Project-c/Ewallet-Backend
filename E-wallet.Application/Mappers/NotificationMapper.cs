@@ -29,7 +29,6 @@ namespace E_wallet.Application.Mappers
             UserId= _notification.UserId,
             Event= _notification.Event,
             Content= _notification.Content,
-            Type= _notification.Type,
             CreatedAt = DateTime.UtcNow,
             IsRead = false,
             };
@@ -45,7 +44,6 @@ namespace E_wallet.Application.Mappers
                 Id = _notification.Id,
                 UserId = _notification.UserId,
                 Event = _notification.Event,
-                Type = _notification.Type,
                 IsRead= _notification.IsRead,
                 Content= _notification.Content,
                 createdAt=_notification.CreatedAt.ToString(),
