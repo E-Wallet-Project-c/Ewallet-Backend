@@ -10,7 +10,9 @@ namespace E_wallet.Domain.Interfaces
     public interface IWalletRepository
     {
         Task<List<Wallet>> GetWalletsByUserId(int userId);
+        Task<Wallet?> GetWalletwithtransactionByIdAsync(int walletId);
         Task<Wallet?> GetWalletByIdAsync(int walletId);
+
         Task<IEnumerable<Transaction>> GetWalletTransactionsAsync(int walletId);
         Task<Wallet> CreateWallet(Wallet wallet);
     }

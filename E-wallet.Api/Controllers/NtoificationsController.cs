@@ -20,63 +20,11 @@ namespace E_wallet.Api.Controllers
             _NotificationService = NotificationService;
         }
 
-        [HttpPost("AddNotification")]
-        public async Task<IActionResult> AddNotification([FromBody]NotificationRequest notification)
-        {
-            try
-            {
-                var response = await _NotificationService.AddNotification(notification);
-
-                return Ok(response);
-            }
-            catch (Exception ex) {
-                return StatusCode(500, $"{ex.Message}");
-            }
-            
-        }
-
-        [HttpGet("GetById/{Id}")]
-        public async Task<IActionResult> GetById([FromRoute]int Id)
-        {
-            try
-            {
-                var response = await _NotificationService.GetById(Id);
-
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"{ex.Message}");
-
-            }
-        }
-
-
-        [HttpGet("GetAllNotifications")]
-        public async Task<IActionResult> GetAllNotifications()
-        {
-            try
-            {
-                var response = await _NotificationService.GetAllNotifications();
-
-              
-
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"{ex.Message}");
-
-            }
-        }
-
-
-
         [HttpGet("GetUserNotifications/{userId}")]
-        public async Task<IActionResult> GetUserNotifications( int userId, [FromQuery] string? Type)
+        public async Task<IActionResult> GetUserNotifications([FromRoute] int userId)
         {
             try {
-                var result = await _NotificationService.GetUserNotifications(userId, Type);
+                var result = await _NotificationService.GetUserNotifications(userId);
 
                 return Ok(result);
 
@@ -86,30 +34,6 @@ namespace E_wallet.Api.Controllers
                 return StatusCode(500, $"{ex.Message}");
             }
            
-        }
-
-
-
-
-
-
-
-        [HttpPatch("UpadteNotification/{id}")]
-        public async Task<IActionResult> UpadteNotification(int id,[FromBody]NotificationRequest notification)
-        {
-            try
-            {
-                var response = await _NotificationService.UpdateUserNotifications(id,notification);
-
-             
-
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"{ex.Message}");
-
-            }
         }
 
 

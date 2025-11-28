@@ -53,7 +53,9 @@ namespace E_wallet.Api.Controllers
             
         }
 
-        [HttpGet("GetUserWallets{UserId}")]
+
+
+        [HttpGet("GetUserWallets/{UserId}")]
         public async Task<ActionResult> GetUserWallets( [FromRoute]int UserId)
         {
             try
@@ -61,6 +63,19 @@ namespace E_wallet.Api.Controllers
                 var response = await _walletService.GetUserWallets(UserId);
             
                 return Ok(response);
+            }
+            catch (Exception ex) {
+                return StatusCode(500, $"{ex.Message}");
+            }
+           
+        }
+        [HttpGet("GetWalletById/{WalletId}")]
+        public async Task<ActionResult> GetWalletsById([FromRoute]int WalletId)
+        {
+            try
+            {
+                var wallet= await _walletService.GetWalletById(WalletId);
+                return Ok(wallet);
             }
             catch (Exception ex) {
                 return StatusCode(500, $"{ex.Message}");

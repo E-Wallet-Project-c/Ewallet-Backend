@@ -51,7 +51,7 @@ namespace E_wallet.Application.Services
 
         public async Task<Result<IEnumerable<BeneficiaryResponse>>> GetAllBeneficiariesByWalletId(int walletId)
         {
-            var wallet = await _walletRepository.GetWalletByIdAsync(walletId);
+            var wallet = await _walletRepository.GetWalletwithtransactionByIdAsync(walletId);
             if (wallet == null)
                 return Result<IEnumerable<BeneficiaryResponse>>.Failure("Wallet not found");
 

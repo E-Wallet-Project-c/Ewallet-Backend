@@ -18,6 +18,11 @@ namespace E_wallet.Application.Mappers
             {
                 userId = wallet.UserId,
                 WalletId = wallet.Id,
+                Currency =  wallet.Currency,
+                Balance = wallet.Balance,
+                WalletName= wallet.IsDefaultWallet ? "Default Wallet" : "Secondary Wallet",
+                 IsActive= wallet.IsActive,
+                  IsDefault= wallet.IsDefaultWallet,
             };
         }
 

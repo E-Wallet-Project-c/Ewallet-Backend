@@ -48,7 +48,7 @@ namespace E_wallet.Application.Services
 
         public async Task<WalletBalanceResponseDto?> GetWalletBalanceAsync(int walletId)
         {
-            var wallet = await _walletRepo.GetWalletByIdAsync(walletId);
+            var wallet = await _walletRepo.GetWalletwithtransactionByIdAsync(walletId);
             if (wallet == null)
                 return null;
 
@@ -90,7 +90,15 @@ namespace E_wallet.Application.Services
 
             return WalletMapper.ToResponse(savedWallet);
         }
+        public async Task<WalletResponse> GetWalletById(int Id)
+        {
+            Wallet wallet = await  _walletRepo.GetWalletByIdAsync(Id);
+            if (wallet == null) {
+                return null;
+            }
 
+            return WalletMapper.ToResponse(wallet);
+        }
         public async Task<List<WalletResponse>> GetUserWallets(int UserId)
         {
             var user = await _userRepository.GetByIdAsync(UserId);
@@ -112,7 +120,7 @@ namespace E_wallet.Application.Services
 
         public async Task<Result<TopUpWithdrawResponse>> TopUpToWalletAsync(TopUpWithdrawRequest dto)
         {
-            Wallet wallet = await _walletRepo.GetWalletByIdAsync(dto.WalletId);
+            Wallet wallet = await _walletRepo.GetWalletwithtransactionByIdAsync(dto.WalletId);
             if (wallet == null)
                 return Result<TopUpWithdrawResponse>.Failure("Wallet not exist");
 
@@ -168,7 +176,7 @@ namespace E_wallet.Application.Services
 
         public async Task<Result<TopUpWithdrawResponse>> WithdrawFromWalletAsync(TopUpWithdrawRequest dto)
         {
-            Wallet wallet = await _walletRepo.GetWalletByIdAsync(dto.WalletId);
+            Wallet wallet = await _walletRepo.GetWalletwithtransactionByIdAsync(dto.WalletId);
             if (wallet == null)
                 return Result<TopUpWithdrawResponse>.Failure("Wallet not exist");
 
@@ -234,11 +242,11 @@ namespace E_wallet.Application.Services
                 if (ExceedDailyAmountLimit(dto.SenderWalletId, DateTime.Now, dto.Amount))
                     return Result<TransferResponse>.Failure("Daily amount transfer limit exceeded for the sender wallet.");
 
-                var senderWallet = await _walletRepo.GetWalletByIdAsync(dto.SenderWalletId);
+                var senderWallet = await _walletRepo.GetWalletwithtransactionByIdAsync(dto.SenderWalletId);
                 if (senderWallet == null)
                     return Result<TransferResponse>.Failure("Sender wallet not exist");
 
-                var receiverWallet = await _walletRepo.GetWalletByIdAsync(dto.ReceiverWalletId);
+                var receiverWallet = await _walletRepo.GetWalletwithtransactionByIdAsync(dto.ReceiverWalletId);
                 if (receiverWallet == null)
                     return Result<TransferResponse>.Failure("Receiver wallet not exist");
 
