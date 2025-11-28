@@ -46,7 +46,7 @@ namespace E_wallet.Api.Controllers
         {
             try
             {
-                var result = await _userService.RegisterUserAsync(registerDto);
+                var result = await _userService.RegisterUserAsync(registerDto,ct);
 
                 if (!result.Success)
                     return BadRequest(new { message = result.Message });
@@ -86,11 +86,11 @@ namespace E_wallet.Api.Controllers
        
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserLoginRequest loginDto)
+        public async Task<IActionResult> Login([FromBody] UserLoginRequest loginDto, CancellationToken ct)
         {
             try
             {
-                var result = await _userService.LoginAsync(loginDto);
+                var result = await _userService.LoginAsync(loginDto,ct);
 
                 if (!result.IsSuccess)
                     return BadRequest(new { message = result.ErrorMessage });
@@ -128,13 +128,16 @@ namespace E_wallet.Api.Controllers
             }
         }
 
-        [HttpPost("ForgetPassword")]
-        public async Task<IActionResult> Checkemail([FromBody] ForgetPasswordEmailrequest dto)
+        [HttpPost("ForgetPassword/{Email}")]
+        public async Task<IActionResult> Checkemail([FromRoute] ForgetPasswordEmailrequest dto, CancellationToken ct)
         {
-
-            await _userService.ForgetPasswordAsync(dto);
+          
+            var v=await _userService.ForgetPasswordAsync(dto, ct);
+            if(v==null)
+                return BadRequest(new { message = "Email not found" });
             return Ok(new { message = "OTP sent to your email" });
         }
+
 
         [HttpPost("ResetPassword")]
         public async Task<IActionResult> Reset([FromBody] NewPasswordrequest dto)
