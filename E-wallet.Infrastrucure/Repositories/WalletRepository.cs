@@ -45,7 +45,7 @@ namespace E_wallet.Infrastrucure.Repositories
         {
             return await _context.Wallets
                                  .AsNoTracking()         // read-only mode = faster & lighter
-                                 .Where(w => w.UserId == userId)
+                                 .Where(w => w.UserId == userId && w.IsDeleted==false)  
                                  .ToListAsync();
         }
         public async Task<Wallet> CreateWallet(Wallet wallet)

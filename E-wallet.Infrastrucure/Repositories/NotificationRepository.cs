@@ -56,6 +56,7 @@ namespace E_wallet.Infrastrucure.Repositories
         {
             var notification = await _Context.Notifications.Where(u => u.Id == Id).SingleOrDefaultAsync();
             notification.IsActive = false;
+            notification.IsDeleted = true;
             await _Context.SaveChangesAsync();
             return notification;
         }
