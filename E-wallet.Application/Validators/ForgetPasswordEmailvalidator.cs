@@ -13,9 +13,13 @@ namespace E_wallet.Application.Validators
         public ForgetPasswordEmailvalidator()
         {
             // FullName validation
-            RuleFor(x => x.UserId)
-                .NotEmpty().WithMessage("Full name is required.")
-                .GreaterThan(0).WithMessage("The ID m");
+
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage("Email is required.")
+                .EmailAddress().WithMessage("Invalid email format.")
+                .MaximumLength(50).WithMessage("The email must not exceed 50 characters.")
+                .Matches(@"^[A-Za-z0-9._%+-]+@(gmail\.com|yahoo\.com|outlook\.com)$")
+                .WithMessage("Email must be valid and end with gmail.com, yahoo.com, or outlook.com.");
         }
     }
 }

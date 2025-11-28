@@ -8,7 +8,6 @@ namespace E_wallet.Application.Dtos.Request
 {
     public class WalletRequest
     {
-        public int WalletId { get; set; } 
         public int UserId { get; set; } 
         public  bool IsDefault { get; set; }=true;
     }
