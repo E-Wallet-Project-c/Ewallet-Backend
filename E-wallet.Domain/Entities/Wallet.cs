@@ -27,7 +27,8 @@ public partial class Wallet
 
     [Column(TypeName = "timestamp without time zone")]
     public DateTime? CreatedAt { get; set; }
-    public bool IsDefaultWallet { get; set; } = true;
+    public double Balance { get; set; }= 0.0;
+    public bool IsDefaultWallet { get; set; } = false;
 
     [StringLength(50)]
     public string? UpdatedBy { get; set; }

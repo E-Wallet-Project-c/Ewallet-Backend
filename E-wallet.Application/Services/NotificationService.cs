@@ -160,7 +160,7 @@ namespace E_wallet.Application.Services
                 return ;
 
             var inAppNotification = NotificationMapper.ToNotificationEntity(request);
-            inAppNotification.Type = "InApp";
+         
 
 
             var inAppSaved = await _notificationRepository.AddNotification(inAppNotification);
@@ -174,7 +174,7 @@ namespace E_wallet.Application.Services
             if (profile.EmailNotifications)
             {
                 var emailNotification = NotificationMapper.ToNotificationEntity(request);
-                emailNotification.Type = "Email";
+   
                 emailNotification.UserId = request.UserId;
 
                 var emailSaved = await _notificationRepository.AddNotification(emailNotification);
@@ -196,7 +196,7 @@ namespace E_wallet.Application.Services
             if (profile.SMSNotifications)
             {
                 var smsNotification = NotificationMapper.ToNotificationEntity(request);
-                smsNotification.Type = "SMS";
+        
                 smsNotification.UserId = request.UserId;
 
                 var smsSaved = await _notificationRepository.AddNotification(smsNotification);
