@@ -10,6 +10,16 @@ namespace E_wallet.Application.Dtos.Response
     {
         public int userId { get; set; }
         public int WalletId { get; set; }
+
+        public string WalletName { get; set; }= string.Empty;
+
+        public double  Balance { get; set; }
+         
+        public bool? IsActive { get; set; }
+
+        public bool IsDefault { get; set; }
+
+        public string Currency { get; set; }= string.Empty;
     }
 
 }

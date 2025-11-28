@@ -41,33 +41,8 @@ namespace E_wallet.Application.Services
         }
 
 
-        public async Task<NotificationResponse?> AddNotification(NotificationRequest notification)
-        {
-            if (await _userRepository.GetByIdAsync(notification.UserId)==null)
-            {
-                return null;
-            }
-            var entity = NotificationMapper.ToNotificationEntity(notification);
-            var saved = await _notificationRepository.AddNotification(entity);
-
-            if (saved is null)
-                return null ;
-
-            return NotificationMapper.ToNotificationDto(saved);
-        }
-
-        public async Task<List<NotificationResponse>?> GetAllNotifications()
-        {
-            var notifications = await _notificationRepository.GetAllNotifications();
-
-            if ( notifications.Count == 0)
-                return null;
-
-            return  NotificationMapper.ToNotificationDtoList(notifications);
-        }
-
-
-        public async Task<List<NotificationResponse>?> GetUserNotifications(int UserId, string? Type)
+      
+        public async Task<List<NotificationResponse>?> GetUserNotifications(int UserId)
         {
             if (await _userRepository.GetByIdAsync(UserId) == null)
             {
@@ -76,10 +51,7 @@ namespace E_wallet.Application.Services
 
             List<Notification> notifications;
 
-            if (string.IsNullOrWhiteSpace(Type))
                 notifications = await _notificationRepository.GetNotificationByUserId(UserId);
-            else
-                notifications = await _notificationRepository.GetByUserIdAndType(UserId, Type);
 
             if ( notifications.Count == 0)
                 return null;
@@ -88,31 +60,7 @@ namespace E_wallet.Application.Services
         }
 
 
-        public async Task<NotificationResponse?> UpdateUserNotifications(int Id, NotificationRequest request)
-        {
-
-            if (await _notificationRepository.GetById(Id) == null)
-            {
-                return null;
-            }
-
-            if (await _userRepository.GetByIdAsync(request.UserId) == null)
-            {
-                return null;
-            }
-
-            var entity = NotificationMapper.ToNotificationEntity(request);
-            entity.Id = Id;
-
-            var updated = await _notificationRepository.UpdateNotification(entity);
-
-            if (updated == null)
-                return null;
-
-            return NotificationMapper.ToNotificationDto(updated);
-        }
-
-        public async Task<NotificationResponse?> DeleteUserNotification(int Id)
+        public  async Task<NotificationResponse?> DeleteUserNotification(int Id)
         {
             if (await _notificationRepository.GetById(Id) == null)
             {
@@ -128,26 +76,12 @@ namespace E_wallet.Application.Services
                 NotificationMapper.ToNotificationDto(deleted);
         }
 
-        public async Task<NotificationResponse?> GetById(int Id)
-        {
-            var notification = await _notificationRepository.GetById(Id);
-
-            if (notification == null)
-                return null;
-
-            // mark as read
-
-            notification.IsRead = true;
-
-            return 
-                NotificationMapper.ToNotificationDto(await _notificationRepository.UpdateNotification(notification));
-        }
+    
 
       
 
         public async Task AddAndSendAsync(NotificationRequest request)
         {
-            var notifications = new List<Notification>();
 
             var profile = await _profileRepository.GetByUserIdAsync(request.UserId);
 
@@ -168,45 +102,16 @@ namespace E_wallet.Application.Services
             if (inAppSaved is null)
                 return;
 
-            notifications.Add(inAppSaved);
-
-           
-            if (profile.EmailNotifications)
-            {
-                var emailNotification = NotificationMapper.ToNotificationEntity(request);
-   
-                emailNotification.UserId = request.UserId;
-
-                var emailSaved = await _notificationRepository.AddNotification(emailNotification);
-                if (emailSaved is null)
-                    return ;
-
-                notifications.Add(emailSaved);
-
-
-                await _emailHelper.SendEmailAsync(
-                    email: "mohammedsabuabdo@gmail.com",
-                    EmailSubject: request.Event,
-                    EmailContent: request.Content,
-                    UserName: "User");
-
-            }
-
-
-            if (profile.SMSNotifications)
-            {
+          
                 var smsNotification = NotificationMapper.ToNotificationEntity(request);
         
                 smsNotification.UserId = request.UserId;
 
-                var smsSaved = await _notificationRepository.AddNotification(smsNotification);
-                if (smsSaved is null)
-                    return ;
+               
 
-                notifications.Add(smsSaved);
                 await _hubContext.Clients
             .User(request.UserId.ToString())
-            .SendAsync("NotificationReceived", NotificationMapper.ToNotificationDto(smsSaved));
+            .SendAsync("NotificationReceived", NotificationMapper.ToNotificationDto(smsNotification));
 
                 //if (!string.IsNullOrWhiteSpace(profile.Phone))
                 {
@@ -220,4 +125,4 @@ namespace E_wallet.Application.Services
 
 
     }
-}
+

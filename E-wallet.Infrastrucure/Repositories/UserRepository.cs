@@ -21,11 +21,11 @@ namespace E_wallet.Infrastrucure.Repositories
 
         public async Task<User?> GetByEmailAsync(string email, CancellationToken ct)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.IsDeleted ==false ,ct);
+            return await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email && u.IsDeleted ==false ,ct);
         }
         public async Task<User?> GetByIdAsync(int id)
         {
-            return await _context.Users.FirstOrDefaultAsync(U => U.Id == id &&  U.IsDeleted == false);
+            return await _context.Users.AsNoTracking().FirstOrDefaultAsync(U => U.Id == id &&  U.IsDeleted == false);
         }
 
 

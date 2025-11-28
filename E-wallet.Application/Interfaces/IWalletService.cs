@@ -13,6 +13,7 @@ namespace E_wallet.Application.Interfaces
 
         Task<WalletBalanceResponseDto?> GetWalletBalanceAsync(int walletId);
         Task<WalletResponse?> CreateWallet(WalletRequest newWallet);
+        Task<WalletResponse> GetWalletById(int Id);
         Task<List<WalletResponse>> GetUserWallets(int UserId);
         Task<Result<TopUpWithdrawResponse>> TopUpToWalletAsync(TopUpWithdrawRequest dto);
         Task<Result<TopUpWithdrawResponse>> WithdrawFromWalletAsync(TopUpWithdrawRequest dto);
