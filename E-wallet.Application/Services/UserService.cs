@@ -28,7 +28,6 @@ namespace E_wallet.Application.Services
 
         public async Task<UserRegisterResponse> RegisterUserAsync(UserRegisterRequest dto)
         {
-
             var existingUser = await _userRepository.GetByEmailAsync(dto.Email);
             if (existingUser != null)
             {
