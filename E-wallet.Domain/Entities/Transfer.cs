@@ -24,6 +24,7 @@ public partial class Transfer
 
     public double? Fee { get; set; }
 
+    public bool? IsDeleted { get; set; }
     public bool IsActive { get; set; } = true;
 
     [Column(TypeName = "timestamp without time zone")]

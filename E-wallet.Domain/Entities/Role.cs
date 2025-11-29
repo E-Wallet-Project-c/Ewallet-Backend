@@ -15,6 +15,8 @@ public partial class Role
     [StringLength(50)]
     public string RoleName { get; set; } = null!;
 
+    public bool? IsDeleted { get; set; }
+
     [InverseProperty("Role")]
     public virtual ICollection<Admin> Admins { get; set; } = new List<Admin>();
 }

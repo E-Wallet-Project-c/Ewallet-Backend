@@ -10,13 +10,13 @@ namespace E_wallet.Application.Interfaces
 {
     public interface IUserService
     {
-        Task<UserRegisterResponse> RegisterUserAsync(UserRegisterRequest dto);
+        Task<UserRegisterResponse> RegisterUserAsync(UserRegisterRequest dto, CancellationToken ct);
 
-        Task<UserRegisterResponse> ForgetPasswordAsync(ForgetPasswordEmailrequest dto);
+        Task<UserRegisterResponse> ForgetPasswordAsync(ForgetPasswordEmailrequest dto, CancellationToken ct);
         Task<UserRegisterResponse> GenaratenewPasswordAsync(NewPasswordrequest dto);
 
         Task<Result<AuthResponse>> RefreshTokenAsync(RefreshTokenRequest refreshRequest);
-        Task<Result<AuthResponse>> LoginAsync(UserLoginRequest dto);
+        Task<Result<AuthResponse>> LoginAsync(UserLoginRequest dto, CancellationToken ct);
         Task<Result> LogoutAsync(RefreshTokenRequest refreshRequest);
 
         Task<string> VerifyOtpAsync(VerifyOtpRequest dto);

@@ -26,9 +26,10 @@ namespace E_wallet.Application.Services
             _sessionRepository = sessionRepository;
         }
 
-        public async Task<UserRegisterResponse> RegisterUserAsync(UserRegisterRequest dto)
+        public async Task<UserRegisterResponse> RegisterUserAsync(UserRegisterRequest dto, CancellationToken ct)
         {
-            var existingUser = await _userRepository.GetByEmailAsync(dto.Email);
+
+            var existingUser = await _userRepository.GetByEmailAsync(dto.Email,ct);
             if (existingUser != null)
             {
                 return UserMapper.Failure("Email is already registered.");
@@ -48,7 +49,7 @@ namespace E_wallet.Application.Services
             user = await _userRepository.AddAsync(user);
 
 
-            await _emailHelper.SendOtpEmailAsync(user.Email, user.OtpCode);
+            await _emailHelper.SendOtpEmailAsync(user.Email, user.OtpCode,"User");
 
            return UserMapper.toResponseRegister(user);
         }
@@ -77,13 +78,13 @@ namespace E_wallet.Application.Services
 
             
         }
-        public async Task<UserRegisterResponse> ForgetPasswordAsync(ForgetPasswordEmailrequest dto)
+        public async Task<UserRegisterResponse?> ForgetPasswordAsync(ForgetPasswordEmailrequest dto, CancellationToken ct)
         {
 
-            User user = await _userRepository.GetByIdAsync(dto.UserId);
+            User user = await _userRepository.GetByEmailAsync(dto.Email,ct);
             if (user == null)
             {
-                return UserMapper.Failure("User does not exist");
+                return null;
             }
             //generate OTP 
             var otpCode = new Random().Next(100000, 999999).ToString();
@@ -93,17 +94,17 @@ namespace E_wallet.Application.Services
             user.OtpExpiry = otpExpiry;
             await _userRepository.UpadteChangesAsync(user);
 
-            await _emailHelper.SendOtpEmailAsync(user.Email, user.OtpCode);
+            await _emailHelper.SendOtpEmailAsync(user.Email, user.OtpCode,user.FullName);
 
             return UserMapper.toResponseRegister(user);
         }
 
         
 
-        public async Task<Result<AuthResponse>> LoginAsync(UserLoginRequest dto)
+        public async Task<Result<AuthResponse>> LoginAsync(UserLoginRequest dto, CancellationToken ct)
         {
             //check email if exist 
-            User existingUser = await _userRepository.GetByEmailAsync(dto.Email);
+            User existingUser = await _userRepository.GetByEmailAsync(dto.Email,ct);
             //!BCrypt.Net.BCrypt.Verify(dto.Password, existingUser.Password) 
             if (existingUser == null || !string.Equals(dto.Password, existingUser.Password))
             {

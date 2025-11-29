@@ -40,179 +40,78 @@ namespace E_wallet.Application.Services
             _hubContext = hubContext;
         }
 
-        #region Basic CRUD
 
-        public async Task<Result<NotificationResponse>> AddNotification(NotificationRequest notification)
-        {
-            if (await _userRepository.GetByIdAsync(notification.UserId)==null)
-            {
-                return Result<NotificationResponse>.Failure("No user with the inserted Id");
-            }
-            var entity = NotificationMapper.ToNotificationEntity(notification);
-            var saved = await _notificationRepository.AddNotification(entity);
-
-            if (saved is null)
-                return Result<NotificationResponse>.Failure("Something went wrong and the notification is not added, try again!");
-
-            return Result<NotificationResponse>.Success(NotificationMapper.ToNotificationDto(saved));
-        }
-
-        public async Task<Result<List<NotificationResponse>>> GetAllNotifications()
-        {
-            var notifications = await _notificationRepository.GetAllNotifications();
-
-            if ( notifications.Count == 0)
-                return Result<List<NotificationResponse>>.Failure("No notifications are available!");
-
-            return Result<List<NotificationResponse>>.Success(
-                NotificationMapper.ToNotificationDtoList(notifications));
-        }
-
-
-        public async Task<Result<List<NotificationResponse>>> GetUserNotifications(int UserId, string? Type)
+      
+        public async Task<List<NotificationResponse>?> GetUserNotifications(int UserId)
         {
             if (await _userRepository.GetByIdAsync(UserId) == null)
             {
-                return Result<List<NotificationResponse>>.Failure("No user with the inserted Id");
+                return null;
             }
 
             List<Notification> notifications;
 
-            if (string.IsNullOrWhiteSpace(Type))
                 notifications = await _notificationRepository.GetNotificationByUserId(UserId);
-            else
-                notifications = await _notificationRepository.GetByUserIdAndType(UserId, Type);
 
             if ( notifications.Count == 0)
-                return Result<List<NotificationResponse>>.Failure("This user has no notifications");
+                return null;
 
-            return Result<List<NotificationResponse>>.Success(
-                NotificationMapper.ToNotificationDtoList(notifications));
+            return NotificationMapper.ToNotificationDtoList(notifications);
         }
 
 
-        public async Task<Result<NotificationResponse>> UpdateUserNotifications(int Id, NotificationRequest request)
-        {
-
-            if (await _notificationRepository.GetById(Id) == null)
-            {
-                return Result<NotificationResponse>.Failure("No notification with this Id");
-            }
-
-            if (await _userRepository.GetByIdAsync(request.UserId) == null)
-            {
-                return Result<NotificationResponse>.Failure("No user with the inserted Id");
-            }
-
-            var entity = NotificationMapper.ToNotificationEntity(request);
-            entity.Id = Id;
-
-            var updated = await _notificationRepository.UpdateNotification(entity);
-
-            if (updated == null)
-                return Result<NotificationResponse>.Failure("Something went wrong and the notification is not updated, try again!");
-
-            return Result<NotificationResponse>.Success(
-                NotificationMapper.ToNotificationDto(updated));
-        }
-
-        public async Task<Result<NotificationResponse>> DeleteUserNotification(int Id)
+        public  async Task<NotificationResponse?> DeleteUserNotification(int Id)
         {
             if (await _notificationRepository.GetById(Id) == null)
             {
-                return Result<NotificationResponse>.Failure("No notification with this Id");
+                return null;
             }
 
             var deleted = await _notificationRepository.DeleteNotification(Id);
 
             if (deleted == null)
-                return Result<NotificationResponse>.Failure("Something went wrong and the notification is not deleted, try again!");
+                return null;
 
-            return Result<NotificationResponse>.Success(
-                NotificationMapper.ToNotificationDto(deleted));
+            return 
+                NotificationMapper.ToNotificationDto(deleted);
         }
 
-        public async Task<Result<NotificationResponse>> GetById(int Id)
+    
+
+      
+
+        public async Task AddAndSendAsync(NotificationRequest request)
         {
-            var notification = await _notificationRepository.GetById(Id);
-
-            if (notification == null)
-                return Result<NotificationResponse>.Failure("No notification with this Id.");
-
-            // mark as read
-
-            notification.IsRead = true;
-
-            return Result<NotificationResponse>.Success(
-                NotificationMapper.ToNotificationDto(await _notificationRepository.UpdateNotification(notification)));
-        }
-
-        #endregion
-
-        #region AddAndSendAsync (InApp + Email + SMS)
-
-        public async Task<Result> AddAndSendAsync(NotificationRequest request)
-        {
-            var notifications = new List<Notification>();
 
             var profile = await _profileRepository.GetByUserIdAsync(request.UserId);
 
             if (profile == null)
-                return Result.Failure("User profile not found.");
+                return;
 
             var user = await _userRepository.GetByIdAsync(request.UserId); 
 
             if (user == null)
-                return Result.Failure("User not found.");
+                return ;
 
             var inAppNotification = NotificationMapper.ToNotificationEntity(request);
-            inAppNotification.Type = "InApp";
+         
 
 
             var inAppSaved = await _notificationRepository.AddNotification(inAppNotification);
 
             if (inAppSaved is null)
-                return Result.Failure("Failed to save in-app notification.");
+                return;
 
-            notifications.Add(inAppSaved);
-
-           
-            if (profile.EmailNotifications)
-            {
-                var emailNotification = NotificationMapper.ToNotificationEntity(request);
-                emailNotification.Type = "Email";
-                emailNotification.UserId = request.UserId;
-
-                var emailSaved = await _notificationRepository.AddNotification(emailNotification);
-                if (emailSaved is null)
-                    return Result.Failure("Failed to save email notification.");
-
-                notifications.Add(emailSaved);
-
-
-                await _emailHelper.SendEmailAsync(
-                    email: "mohammedsabuabdo@gmail.com",
-                    EmailSubject: request.Event,
-                    EmailContent: request.Content,
-                    UserName: "User");
-
-            }
-
-
-            if (profile.SMSNotifications)
-            {
+          
                 var smsNotification = NotificationMapper.ToNotificationEntity(request);
-                smsNotification.Type = "SMS";
+        
                 smsNotification.UserId = request.UserId;
 
-                var smsSaved = await _notificationRepository.AddNotification(smsNotification);
-                if (smsSaved is null)
-                    return Result.Failure("Failed to save SMS notification.");
+               
 
-                notifications.Add(smsSaved);
                 await _hubContext.Clients
             .User(request.UserId.ToString())
-            .SendAsync("NotificationReceived", NotificationMapper.ToNotificationDto(smsSaved));
+            .SendAsync("NotificationReceived", NotificationMapper.ToNotificationDto(smsNotification));
 
                 //if (!string.IsNullOrWhiteSpace(profile.Phone))
                 {
@@ -222,10 +121,8 @@ namespace E_wallet.Application.Services
                 }
             }
             
-            // 5) Return list
-            return Result.Success();
         }
 
-        #endregion
+
     }
-}
+

@@ -37,6 +37,8 @@ public partial class Profile
     [Column(TypeName = "time with time zone")]
     public DateTimeOffset? UpdatedAt { get; set; }
 
+    public bool? IsDeleted { get; set; }
+
     public bool? IsActive { get; set; }
     public User User { get; set; } = null!;
 

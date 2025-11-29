@@ -25,7 +25,7 @@ namespace E_wallet.Infrastrucure.Helpers
             string apiKey = _configuration.GetValue<string>("apiKeySendgrid");
             
             var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("ahmadraslan406@outlook.com", "User");
+            var from = new EmailAddress("ahmadraslan406@outlook.com", "E-Wallet");
             var subject = "Sending otp.";
             var to = new EmailAddress(email, UserName);
             var plainTextContent = $"the otp for verification is {otp}.";
@@ -34,24 +34,8 @@ namespace E_wallet.Infrastrucure.Helpers
             var response = await client.SendEmailAsync(msg);
         }
 
-        public async Task SendEmailAsync(string email,string EmailSubject ,string EmailContent, string UserName )
-        {
-            string apiKey = _configuration.GetValue<string>("apiKeySendgrid");
+    
 
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("ahmadraslan406@outlook.com","E-Wallet");
-            var subject = EmailSubject;
-            var to = new EmailAddress(email, UserName);
-            var plainTextContent = EmailContent;
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, "");
-
-            var response = await client.SendEmailAsync(msg);
-
-        }
-
-        public async Task SendOtpEmailAsync(string email, string otp)
-        {
-            ;
-        }
+       
     }
 }

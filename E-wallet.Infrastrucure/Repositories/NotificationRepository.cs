@@ -34,13 +34,6 @@ namespace E_wallet.Infrastrucure.Repositories
 
 
 
-        public async Task<List<Notification>> GetAllNotifications()
-        {
-            return await _Context.Notifications
-                .AsNoTracking()
-                .Where(n => n.IsActive == true)
-                .ToListAsync();
-        }
 
         public async Task<List<Notification>> GetNotificationByUserId(int userId)
         {
@@ -50,34 +43,20 @@ namespace E_wallet.Infrastrucure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<Notification>> GetByUserIdAndType(int userId,String Type)
+
+
+        public async Task<Notification?> GetById(int WallletId)
         {
             return await _Context.Notifications
                 .AsNoTracking()
-                .Where(n => n.UserId == userId && n.Type == Type && n.IsActive == true)
-                .ToListAsync();
+                .Where(w => w.Id == WallletId && w.IsActive == true)
+                .SingleOrDefaultAsync();
         }
-
-        
-
-        public async Task<Notification> GetById(int Id)
-        {
-           return  await _Context.Notifications.Where(n => n.Id == Id && n.IsActive==true).SingleOrDefaultAsync();
-        }
-
-
-
-        public async Task<Notification> UpdateNotification(Notification notification)
-        {
-            _Context.Notifications.Update(notification);
-            await _Context.SaveChangesAsync();
-            return notification;
-        }
-
         public async Task<Notification> DeleteNotification (int Id)
         {
             var notification = await _Context.Notifications.Where(u => u.Id == Id).SingleOrDefaultAsync();
             notification.IsActive = false;
+            notification.IsDeleted = true;
             await _Context.SaveChangesAsync();
             return notification;
         }

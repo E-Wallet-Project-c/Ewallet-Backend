@@ -21,9 +21,6 @@ public partial class Notification
     [StringLength(50)]
     public string Event { get; set; } = null!;
 
-    [StringLength(50)]
-    public string Type { get; set; } = null!;
-
     public bool? IsRead { get; set; }
 
     public DateTime? CreatedAt { get; set; }   
@@ -37,7 +34,10 @@ public partial class Notification
     [Column(TypeName = "time with time zone")]
     public DateTimeOffset? UpdatedAt { get; set; }
 
-    public bool? IsActive { get; set; } 
+    public bool? IsActive { get; set; }
+
+    public bool? IsDeleted { get; set; }
+
 
     [ForeignKey("UserId")]
     [InverseProperty("Notifications")]

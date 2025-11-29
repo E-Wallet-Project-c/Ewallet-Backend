@@ -33,6 +33,7 @@ public partial class UserBankAccount
     [StringLength(50)]
     public string? UpdatedBy { get; set; }
 
+    public bool? IsDeleted { get; set; }
 
     [ForeignKey("WalletId")]
     [InverseProperty("UserBankAccounts")]

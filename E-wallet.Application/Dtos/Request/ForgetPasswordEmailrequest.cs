@@ -8,6 +8,6 @@ namespace E_wallet.Application.Dtos.Request
 {
     public class ForgetPasswordEmailrequest
     {
-        public int UserId { get; set; }
+        public string Email { get; set; }
     }
 }

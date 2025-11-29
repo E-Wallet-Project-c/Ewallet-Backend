@@ -16,10 +16,7 @@ namespace E_wallet.Application.Validators
                 .NotEmpty().WithMessage("Type is required.")
                 .GreaterThan(0).WithMessage("The ID must be greater than 0");
 
-            RuleFor(x => x.Type)
-                .NotEmpty().WithMessage("Type is required.")
-                .Must(type => Enum.TryParse<NotificationType>(type, false, out NotificationType result))
-                .WithMessage("Invalid notification type. Allowed values: InApp, Email, SMS");
+        
 
             RuleFor(x => x.Event)
                 .NotEmpty().WithMessage("Event is required.")

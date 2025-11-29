@@ -27,6 +27,7 @@ public partial class Transaction
 
     public int? TransferId { get; set; }
 
+    public bool? IsDeleted { get; set; }
     public bool? IsActive { get; set; }
 
     [Column(TypeName = "timestamp without time zone")]

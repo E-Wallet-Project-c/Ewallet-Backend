@@ -3,6 +3,7 @@ using System;
 using E_wallet.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace E_wallet.Infrastrucure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251128141946_LastUpdate")]
+    partial class LastUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,9 +113,6 @@ namespace E_wallet.Infrastrucure.Migrations
                     b.Property<bool?>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("ItemType")
                         .IsRequired()
                         .HasColumnType("character varying");
@@ -166,9 +166,6 @@ namespace E_wallet.Infrastrucure.Migrations
                     b.Property<bool?>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("NickName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -214,9 +211,6 @@ namespace E_wallet.Infrastrucure.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<bool?>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Scope")
@@ -269,9 +263,6 @@ namespace E_wallet.Infrastrucure.Migrations
                     b.Property<bool?>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<bool?>("IsRead")
                         .HasColumnType("boolean");
 
@@ -321,9 +312,6 @@ namespace E_wallet.Infrastrucure.Migrations
                     b.Property<bool?>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Phone")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
@@ -361,9 +349,6 @@ namespace E_wallet.Infrastrucure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("RoleName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -394,9 +379,6 @@ namespace E_wallet.Infrastrucure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool?>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("RefreshExpiresAt")
@@ -451,9 +433,6 @@ namespace E_wallet.Infrastrucure.Migrations
                     b.Property<bool?>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<int?>("TransferId")
                         .HasColumnType("integer");
 
@@ -505,9 +484,6 @@ namespace E_wallet.Infrastrucure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true);
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<int>("ReciverWalletId")
                         .HasColumnType("integer");
@@ -625,9 +601,6 @@ namespace E_wallet.Infrastrucure.Migrations
                         .HasColumnType("character varying");
 
                     b.Property<bool?>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<TimeOnly?>("UpdatedAt")
