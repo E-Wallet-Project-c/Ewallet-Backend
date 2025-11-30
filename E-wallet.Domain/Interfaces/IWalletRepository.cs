@@ -9,17 +9,17 @@ namespace E_wallet.Domain.Interfaces
 {
     public interface IWalletRepository
     {
-        Task<List<Wallet>> GetWalletsByUserId(int userId);
+        Task<List<Wallet>> GetWalletsByUserId(int userId, CancellationToken ct);
         Task<Wallet?> GetWalletwithtransactionByIdAsync(int walletId);
-        Task<Wallet?> GetWalletByIdAsync(int walletId);
+        Task<Wallet?> GetWalletByIdAsync(int walletId, CancellationToken ct);
 
         Task<IEnumerable<Transaction>> GetWalletTransactionsAsync(int walletId);
-        Task<Wallet> CreateWallet(Wallet wallet);
+        Task<Wallet> CreateWallet(Wallet wallet, CancellationToken ct);
 
-        Task<Wallet> DeleteWalletById(Wallet Wallet);
-        Task<Wallet> DeleteWalletById(Wallet PrimaryWallet, Wallet SecondaryWallet);
+        Task<Wallet> DeleteWalletById(Wallet Wallet, CancellationToken ct);
+        Task<Wallet> DeleteWalletById(Wallet PrimaryWallet, Wallet SecondaryWallet, CancellationToken ct);
 
-        Task<Wallet> SetAsDefault(Wallet Wallet);
+        Task<Wallet> SetAsDefault(Wallet Wallet, CancellationToken ct);
 
 
     }
