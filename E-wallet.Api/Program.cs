@@ -49,13 +49,7 @@ namespace E_wallet.Api
        
             app.UseSwagger();
             app.UseSwaggerUI();
-            //app.UseSwaggerUI(c =>
-            //{
-            //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "E-wallet Api V1");
-
-            //    c.RoutePrefix = string.Empty;
-            //}
-            //);
+            
 
             app.UseHttpsRedirection();
 
