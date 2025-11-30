@@ -1,5 +1,6 @@
 ﻿using E_wallet.Application.Dtos.Request;
 using E_wallet.Application.Dtos.Response;
+using E_wallet.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,11 @@ namespace E_wallet.Application.Interfaces
         Task<Result<TopUpWithdrawResponse>> TopUpToWalletAsync(TopUpWithdrawRequest dto);
         Task<Result<TopUpWithdrawResponse>> WithdrawFromWalletAsync(TopUpWithdrawRequest dto);
         Task<Result<TransferResponse>> TransferFromWalletAsync(TransferRequest dto);
-      
+        Task<WalletResponse> DeleteWalletById(WalletRequest Wallet);
+        Task<WalletResponse> DeleteDefaultWalletById(DefaultWalletDeleteRequest Wallet);
+        Task<WalletResponse> SetDefaultWallet(WalletRequest Wallet);
+
+
     }
 
 }

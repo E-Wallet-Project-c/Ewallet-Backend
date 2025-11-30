@@ -1,4 +1,5 @@
-﻿using E_wallet.Application.Dtos.Response;
+﻿using E_wallet.Application.Dtos.Request;
+using E_wallet.Application.Dtos.Response;
 using E_wallet.Domain.Entities;
 using E_wallet.Domain.Entities;
 using Microsoft.AspNetCore.Server.IISIntegration;
@@ -42,15 +43,16 @@ namespace E_wallet.Application.Mappers
         }
 
 
-        public static Wallet ToEntity(int _UserId,bool IsDefault )
+        public static Wallet ToEntity(WalletRequest Wallet )
         {
             return new Wallet
             {
-                UserId = _UserId,
+                Id=Wallet.WalletId,
+                UserId = Wallet.UserId,
                 Currency = "JD",
                 IsActive = true,
                 IsDeleted = false,
-                IsDefaultWallet = IsDefault,
+                IsDefaultWallet = Wallet.IsDefault,
                 CreatedAt = DateTime.Now,
                 CreatedBy = null
             };

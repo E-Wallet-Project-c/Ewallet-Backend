@@ -55,8 +55,13 @@ namespace E_wallet.Infrastrucure.Repositories
         public async Task<Notification> DeleteNotification (int Id)
         {
             var notification = await _Context.Notifications.Where(u => u.Id == Id).SingleOrDefaultAsync();
+            if (notification.IsDeleted == true || notification == null)
+            {
+                return null;
+            }
             notification.IsActive = false;
             notification.IsDeleted = true;
+            notification.UpdatedAt = DateTime.Now;
             await _Context.SaveChangesAsync();
             return notification;
         }
