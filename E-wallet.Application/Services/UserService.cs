@@ -55,9 +55,9 @@ namespace E_wallet.Application.Services
         }
 
         
-        public async Task<UserRegisterResponse> GenaratenewPasswordAsync(NewPasswordrequest dto)
+        public async Task<UserRegisterResponse> GenaratenewPasswordAsync(NewPasswordrequest dto, CancellationToken ct)
         {
-            User user = await _userRepository.GetByIdAsync(dto.id);
+            User user = await _userRepository.GetByIdAsync(dto.id,ct);
             if (user == null)
             {
                 return UserMapper.Failure("User does not exist");
@@ -68,7 +68,7 @@ namespace E_wallet.Application.Services
             }
             user.Password = dto.newPassword;
            
-            await _userRepository.UpadteChangesAsync(user);
+            await _userRepository.UpadteChangesAsync(user, ct);
             return UserMapper.toResponseRegister(user);
         
 
@@ -92,7 +92,7 @@ namespace E_wallet.Application.Services
             //send OPT to email 
             user.OtpCode = otpCode;
             user.OtpExpiry = otpExpiry;
-            await _userRepository.UpadteChangesAsync(user);
+            await _userRepository.UpadteChangesAsync(user, ct);
 
             await _emailHelper.SendOtpEmailAsync(user.Email, user.OtpCode,user.FullName);
 
@@ -116,9 +116,9 @@ namespace E_wallet.Application.Services
             return Result<AuthResponse>.Success(authResponse);
         }
 
-      public async   Task <string> VerifyOtpAsync(VerifyOtpRequest dto)
+      public async   Task <string> VerifyOtpAsync(VerifyOtpRequest dto, CancellationToken ct)
         {
-            User user = await _userRepository.GetByIdAsync(dto.UserId);
+            User user = await _userRepository.GetByIdAsync(dto.UserId,ct);
             if (user == null)
                 return "User not found";
 
@@ -133,7 +133,7 @@ namespace E_wallet.Application.Services
                 user.IsVerified = true;
                 user.OtpCode = null;
                 user.OtpExpiry = null;
-                await _userRepository.UpadteChangesAsync(user);
+                await _userRepository.UpadteChangesAsync(user, ct);
                 return "Registration verified successfully";
             }
             else if (dto.Purpose == "resetPassword")

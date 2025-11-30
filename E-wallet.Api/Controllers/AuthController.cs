@@ -140,9 +140,9 @@ namespace E_wallet.Api.Controllers
 
 
         [HttpPost("ResetPassword")]
-        public async Task<IActionResult> Reset([FromBody] NewPasswordrequest dto)
+        public async Task<IActionResult> Reset([FromBody] NewPasswordrequest dto, CancellationToken ct)
         {
-            var result = await _userService.GenaratenewPasswordAsync(dto);
+            var result = await _userService.GenaratenewPasswordAsync(dto,ct);
 
             if (!result.Success)
             {
@@ -161,9 +161,9 @@ namespace E_wallet.Api.Controllers
             }
         }
             [HttpPost("verify-otp")]
-            public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequest dto)
+            public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequest dto, CancellationToken ct)
             {
-                var result = await _userService.VerifyOtpAsync(dto);
+                var result = await _userService.VerifyOtpAsync(dto,ct);
                 if (result.Contains("Invalid") || result.Contains("expired") || result.Contains("not found"))
                     return BadRequest(new { message = result });
 

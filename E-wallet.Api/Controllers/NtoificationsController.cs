@@ -21,10 +21,10 @@ namespace E_wallet.Api.Controllers
         }
 
         [HttpGet("GetUserNotifications/{userId}")]
-        public async Task<IActionResult> GetUserNotifications([FromRoute] int userId)
+        public async Task<IActionResult> GetUserNotifications([FromRoute] int userId, CancellationToken ct)
         {
             try {
-                var result = await _NotificationService.GetUserNotifications(userId);
+                var result = await _NotificationService.GetUserNotifications(userId,ct);
 
                 return Ok(result);
 
@@ -38,11 +38,11 @@ namespace E_wallet.Api.Controllers
 
 
         [HttpDelete("DeleteNotification/{Id}")]
-        public async Task<IActionResult> DeleteNotification([FromRoute]int Id)
+        public async Task<IActionResult> DeleteNotification([FromRoute]int Id, CancellationToken ct)
         {
             try
             {
-                var response = await _NotificationService.DeleteUserNotification(Id);
+                var response = await _NotificationService.DeleteUserNotification(Id,ct);
 
                 return Ok(response);
             }
@@ -53,6 +53,34 @@ namespace E_wallet.Api.Controllers
             }
         }
 
+
+        [HttpGet("UserUnReadCount/{userId}")]
+        public async Task<IActionResult> GetUserUnReadCount([FromRoute] int userId,CancellationToken ct)
+        {
+            try
+            {
+                var response = await _NotificationService.UnReadNotificationCount(userId, ct);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"{ex.Message}");
+            }
+        }
+
+        [HttpGet("SetASRead/{Id}")]
+        public async Task<IActionResult> SetAsRead([FromRoute] int Id, CancellationToken ct)
+        {
+            try
+            {
+                var response = await _NotificationService.SetAsRead(Id, ct);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"{ex.Message}");
+            }
+        }
 
     }
 }

@@ -36,11 +36,11 @@ namespace E_wallet.Api.Controllers
         }
 
         [HttpPost("CreatWallet")]
-        public async Task<ActionResult> CreatWallet(WalletRequest NewWallet)
+        public async Task<ActionResult> CreatWallet(WalletRequest NewWallet, CancellationToken ct)
         {
             try
             {
-                var response = await _walletService.CreateWallet(NewWallet);
+                var response = await _walletService.CreateWallet(NewWallet, ct);
 
 
 
@@ -57,11 +57,11 @@ namespace E_wallet.Api.Controllers
 
 
         [HttpGet("GetUserWallets/{UserId}")]
-        public async Task<ActionResult> GetUserWallets([FromRoute] int UserId)
+        public async Task<ActionResult> GetUserWallets([FromRoute] int UserId, CancellationToken ct)
         {
             try
             {
-                var response = await _walletService.GetUserWallets(UserId);
+                var response = await _walletService.GetUserWallets(UserId, ct);
 
                 return Ok(response);
             }
@@ -72,11 +72,11 @@ namespace E_wallet.Api.Controllers
 
         }
         [HttpGet("GetWalletById/{WalletId}")]
-        public async Task<ActionResult> GetWalletsById([FromRoute] int WalletId)
+        public async Task<ActionResult> GetWalletsById([FromRoute] int WalletId, CancellationToken ct)
         {
             try
             {
-                var wallet = await _walletService.GetWalletById(WalletId);
+                var wallet = await _walletService.GetWalletById(WalletId, ct);
                 return Ok(wallet);
             }
             catch (Exception ex)
@@ -88,9 +88,9 @@ namespace E_wallet.Api.Controllers
 
 
         [HttpPost("TopUpWallet")]
-        public async Task<IActionResult> TopUpWallet([FromBody] TopUpWithdrawRequest request)
+        public async Task<IActionResult> TopUpWallet([FromBody] TopUpWithdrawRequest request, CancellationToken ct)
         {
-            var response = await _walletService.TopUpToWalletAsync(request);
+            var response = await _walletService.TopUpToWalletAsync(request,ct);
 
             if (!response.IsSuccess)
                 return BadRequest(response);
@@ -100,9 +100,9 @@ namespace E_wallet.Api.Controllers
         }
 
         [HttpPost("WithdrawWallet")]
-        public async Task<IActionResult> WithdrawBankAccount([FromBody] TopUpWithdrawRequest request)
+        public async Task<IActionResult> WithdrawBankAccount([FromBody] TopUpWithdrawRequest request, CancellationToken ct)
         {
-            var response = await _walletService.WithdrawFromWalletAsync(request);
+            var response = await _walletService.WithdrawFromWalletAsync(request,ct);
 
             if (!response.IsSuccess)
                 return BadRequest(response);
@@ -112,9 +112,9 @@ namespace E_wallet.Api.Controllers
         }
 
         [HttpPost("TransferFromWallet")]
-        public async Task<IActionResult> TransferFromWallet([FromBody] TransferRequest request)
+        public async Task<IActionResult> TransferFromWallet([FromBody] TransferRequest request, CancellationToken ct)
         {
-            var response = await _walletService.TransferFromWalletAsync(request);
+            var response = await _walletService.TransferFromWalletAsync(request,ct);
 
             if (!response.IsSuccess)
                 return BadRequest(response);
@@ -124,11 +124,11 @@ namespace E_wallet.Api.Controllers
         }
 
         [HttpDelete("DeleteWallet")]
-        public async Task<IActionResult> DeleteWallet([FromBody] WalletRequest wallet)
+        public async Task<IActionResult> DeleteWallet([FromBody] WalletRequest wallet, CancellationToken ct)
         {
             try
             {
-                var Wallet = await _walletService.DeleteWalletById(wallet);
+                var Wallet = await _walletService.DeleteWalletById(wallet, ct);
                 return Ok(Wallet);
             }
             catch (Exception ex)
@@ -139,11 +139,11 @@ namespace E_wallet.Api.Controllers
         }
 
         [HttpDelete("DeleteDefaultWallet")]
-        public async Task<IActionResult> DeleteDefaultWallet([FromBody] DefaultWalletDeleteRequest wallet)
+        public async Task<IActionResult> DeleteDefaultWallet([FromBody] DefaultWalletDeleteRequest wallet, CancellationToken ct)
         {
             try
             {
-                var Wallet = await _walletService.DeleteDefaultWalletById(wallet);
+                var Wallet = await _walletService.DeleteDefaultWalletById(wallet, ct);
                 return Ok(Wallet);
             }
             catch (Exception ex)
@@ -154,11 +154,11 @@ namespace E_wallet.Api.Controllers
         }
 
         [HttpPatch("SetDefaultWallet")]
-        public async Task<IActionResult> SetDefaultWallet([FromBody] WalletRequest wallet)
+        public async Task<IActionResult> SetDefaultWallet([FromBody] WalletRequest wallet, CancellationToken ct)
         {
             try
             {
-                var Wallet = await _walletService.SetDefaultWallet(wallet);
+                var Wallet = await _walletService.SetDefaultWallet(wallet, ct);
                 return Ok(Wallet);
             }
             catch (Exception ex)
