@@ -97,17 +97,17 @@ namespace E_wallet.Infrastrucure.Repositories
             await _context.SaveChangesAsync();
             await DeleteRelatedItems(_PrimaryWallet, ct);
             
-            return await SetAsDefault(SecondaryWalletId, ct);
+            return await SetAsDefault(SecondaryWalletId,UserId, ct);
         }
 
    
 
 
-     public async Task<Wallet> SetAsDefault(int WalletId , CancellationToken ct)
+     public async Task<Wallet> SetAsDefault(int WalletId, int UserId, CancellationToken ct)
         {
            
             Wallet? newwallet = await _context.Wallets.Where(w => w.Id == WalletId && w.IsActive == true).FirstOrDefaultAsync(ct);
-            int UserId = newwallet.UserId;
+            
             Wallet? oldwallet = await _context.Wallets.Where(w => w.UserId == UserId && w.IsDefaultWallet == true && w.IsActive == true).FirstOrDefaultAsync(ct);
 
             if (oldwallet == null || newwallet == null)
