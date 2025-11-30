@@ -20,11 +20,11 @@ namespace E_wallet.Api.Controllers
             _NotificationService = NotificationService;
         }
 
-        [HttpGet("GetUserNotifications/{userId}")]
-        public async Task<IActionResult> GetUserNotifications([FromRoute] int userId, CancellationToken ct)
+        [HttpGet("GetUserNotifications/{userId}/{PageNumber}/{MaxItem}")]
+        public async Task<IActionResult> GetUserNotifications([FromRoute] int userId, [FromRoute] int PageNumber, [FromRoute] int MaxItems, CancellationToken ct)
         {
             try {
-                var result = await _NotificationService.GetUserNotifications(userId,ct);
+                var result = await _NotificationService.GetUserNotifications(userId,PageNumber,MaxItems,ct);
 
                 return Ok(result);
 

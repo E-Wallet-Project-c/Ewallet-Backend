@@ -80,31 +80,30 @@ namespace E_wallet.Application.Services
             {
                 UserId = newWallet.UserId,
                 Content = "You have created a wallet successfully.",
-                Event = "Wallet Creation",
-                Type = "InApp"
+                Event = NotificationEvents.CREATEWALLET.ToString(),
             },ct);
-            
-            
+
+           
 
             return WalletMapper.ToResponse(savedWallet);
         }
         public async Task<WalletResponse> GetWalletById(int Id, CancellationToken ct)
         {
-            Wallet wallet = await  _walletRepo.GetWalletByIdAsync(Id,ct);
+            var wallet = await  _walletRepo.GetWalletByIdAsync(Id,ct);
             if (wallet == null) {
                 return null;
             }
 
             return WalletMapper.ToResponse(wallet);
         }
-        public async Task<List<WalletResponse>> GetUserWallets(int UserId, CancellationToken ct)
+        public async Task<List<WalletResponse>> GetUserWallets(int UserId, int pagenumber,int  Max,CancellationToken ct)
         {
             var user = await _userRepository.GetByIdAsync(UserId,ct);
 
             if (user == null)
                 return null;
 
-            var wallets = await _walletRepo.GetWalletsByUserId(UserId, ct);
+            var wallets = await _walletRepo.GetWalletsByUserId(UserId,pagenumber,Max ,ct);
             if (wallets.Count == 0)
             {
                 return null;
@@ -120,12 +119,20 @@ namespace E_wallet.Application.Services
             if (user == null)
                 return null;
 
-            Wallet wallet = await _walletRepo.DeleteWalletById(WalletMapper.ToEntity(Wallet), ct);
+            var wallet = await _walletRepo.DeleteWalletById(WalletMapper.ToEntity(Wallet), ct);
 
             if (wallet == null)
             {
                 return null;
             }
+
+            await _notifications.AddAndSendAsync(new NotificationRequest
+            {
+                UserId = Wallet.UserId,
+                Content = $"walletwith Id of{wallet.Id} successfully.",
+                Event = NotificationEvents.DeleteWallet.ToString(),
+            }, ct);
+
             return WalletMapper.ToResponse(wallet);
 
         }
@@ -149,12 +156,20 @@ namespace E_wallet.Application.Services
             };
 
             
-            Wallet wallet = await _walletRepo.DeleteWalletById(WalletMapper.ToEntity(PrimaryWallet),WalletMapper.ToEntity(SecondaryWallet),ct);
+            var wallet = await _walletRepo.DeleteWalletById(WalletMapper.ToEntity(PrimaryWallet),WalletMapper.ToEntity(SecondaryWallet),ct);
 
             if (wallet == null)
             {
                 return null;
             }
+            await _notifications.AddAndSendAsync(new NotificationRequest
+            {
+                UserId = Wallet.UserId,
+                Content = $"wallet with Id of{PrimaryWallet.WalletId} has been deleted successfully ,and " +
+                $"wallet with Id{SecondaryWallet.WalletId} is default wallet.",
+                Event = NotificationEvents.DeleteDefaultWallet.ToString(),
+            }, ct);
+
             return WalletMapper.ToResponse(wallet);
         }
 
@@ -217,7 +232,6 @@ namespace E_wallet.Application.Services
                 UserId = wallet.UserId,
                 Content = $"Your wallet has been topped up with {dto.Balance}. New wallet balance is {walletBalance}.",
                 Event = "Wallet Top-Up",
-                Type = "InApp"
             },ct);
 
             
@@ -277,7 +291,6 @@ namespace E_wallet.Application.Services
                 UserId = wallet.UserId,
                 Content = $"You have withdrawn {dto.Balance} from your wallet. New wallet balance is {newWalletBalance}.",
                 Event = "Wallet Withdrawal",
-                Type = "InApp"
             },ct);
 
             return Result<TopUpWithdrawResponse>.Success(new TopUpWithdrawResponse
@@ -338,7 +351,6 @@ namespace E_wallet.Application.Services
                     UserId = senderWallet.UserId,
                     Content = $"You have sent {dto.Amount} to wallet #{dto.ReceiverWalletId}. New balance: {newSenderBalance}.",
                     Event = "Transfer Sent",
-                    Type = "InApp"
                 },ct);
 
                 await _notifications.AddAndSendAsync(new NotificationRequest
@@ -346,7 +358,6 @@ namespace E_wallet.Application.Services
                     UserId = receiverWallet.UserId,
                     Content = $"You have received {dto.Amount} from wallet #{dto.SenderWalletId}. New balance: {newReceiverBalance}.",
                     Event = "Money Received",
-                    Type = "InApp"
                 },ct);
 
                 await _hubContext.Clients

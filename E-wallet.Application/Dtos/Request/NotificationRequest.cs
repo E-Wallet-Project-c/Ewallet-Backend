@@ -11,6 +11,5 @@ namespace E_wallet.Application.Dtos.Request
         public int UserId {get; set;}
         public string Event { get; set;}
         public string Content { get; set; }
-        public string Type { get; set;}
     }
 }

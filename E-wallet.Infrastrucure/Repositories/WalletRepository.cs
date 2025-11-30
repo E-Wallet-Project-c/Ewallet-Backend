@@ -43,15 +43,20 @@ namespace E_wallet.Infrastrucure.Repositories
                 .Where(t => t.WalletId == walletId && t.IsActive == true)
                 .ToListAsync();
         }
-        public async Task<List<Wallet>> GetWalletsByUserId(int userId, CancellationToken ct)
+        public async Task<List<Wallet>> GetWalletsByUserId(int userId, int pageNumber, int max, CancellationToken ct)
         {
             return await _context.Wallets
-                                 .AsNoTracking()         // read-only mode = faster & lighter
-                                 .Where(w => w.UserId == userId && w.IsDeleted==false)  
+                                 .AsNoTracking() // Faster for read-only
+                                 .Where(w => w.UserId == userId && w.IsDeleted == false)
+                                 .OrderBy(w => w.CreatedAt)
+                                 .Skip((pageNumber - 1) * max)
+                                 .Take(max)
                                  .ToListAsync(ct);
         }
+
         public async Task<Wallet> CreateWallet(Wallet wallet, CancellationToken ct)
         {
+            wallet.CreatedAt = DateTime.Now;
             await _context.Wallets.AddAsync(wallet,ct);
             await _context.SaveChangesAsync(ct);
             return wallet;
@@ -100,10 +105,10 @@ namespace E_wallet.Infrastrucure.Repositories
 
      public async Task<Wallet> SetAsDefault(Wallet Wallet, CancellationToken ct)
         {
-            Wallet? oldwallet = await _context.Wallets.Where(w => w.UserId==Wallet.UserId && w.IsDefaultWallet==true).FirstOrDefaultAsync(ct);
-            Wallet? newwallet = await _context.Wallets.Where(w => w.Id == Wallet.Id).FirstOrDefaultAsync(ct);
+            Wallet? oldwallet = await _context.Wallets.Where(w => w.UserId==Wallet.UserId && w.IsDefaultWallet==true && w.IsActive == true).FirstOrDefaultAsync(ct);
+            Wallet? newwallet = await _context.Wallets.Where(w => w.Id == Wallet.Id && w.IsActive == true).FirstOrDefaultAsync(ct);
 
-            if (oldwallet == null || oldwallet.IsActive == true || newwallet == null || newwallet.IsActive == true)
+            if (oldwallet == null || newwallet == null)
             {
                 return null;
             }

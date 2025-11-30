@@ -12,7 +12,8 @@ namespace E_wallet.Application.Interfaces
 {
     public interface INotificationService
     {
-        Task<List<NotificationResponse>?> GetUserNotifications(int UserId, CancellationToken ct);
+        Task<List<NotificationResponse>?> GetUserNotifications(int UserId, int PageNumber, int MaxItems, CancellationToken ct);
+
         Task<NotificationResponse?> DeleteUserNotification(int Id, CancellationToken ct);
         Task AddAndSendAsync(NotificationRequest request, CancellationToken ct);
 

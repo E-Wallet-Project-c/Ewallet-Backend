@@ -10,7 +10,7 @@ namespace E_wallet.Domain.Interfaces
     public interface INotificationRepository
     {
         Task<Notification> AddNotification(Notification notification, CancellationToken ct);
-        Task<List<Notification>> GetNotificationByUserId(int UserId, CancellationToken ct);
+        Task<List<Notification>> GetNotificationByUserId(int userId, int PageNumber, int MaxItems, CancellationToken ct);
         Task<Notification> DeleteNotification(int Id, CancellationToken ct);
         Task<Notification> GetById(int WallletId, CancellationToken ct);
         Task<Notification> SetAsRead(int Id, CancellationToken ct);

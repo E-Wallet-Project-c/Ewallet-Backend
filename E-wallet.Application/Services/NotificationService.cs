@@ -42,7 +42,7 @@ namespace E_wallet.Application.Services
 
 
       
-        public async Task<List<NotificationResponse>?> GetUserNotifications(int UserId, CancellationToken ct)
+        public async Task<List<NotificationResponse>?> GetUserNotifications(int UserId,int PageNumber,int MaxItems, CancellationToken ct)
         { 
             if (UserId < 0)
             {
@@ -55,7 +55,7 @@ namespace E_wallet.Application.Services
 
             List<Notification> notifications;
 
-                notifications = await _notificationRepository.GetNotificationByUserId(UserId,ct);
+                notifications = await _notificationRepository.GetNotificationByUserId(UserId,PageNumber,MaxItems,ct);
 
             if ( notifications.Count == 0)
                 return null;
@@ -110,7 +110,7 @@ namespace E_wallet.Application.Services
 
 
 
-        public async Task AddAndSendAsync(NotificationRequest request, CancellationToken ct)
+        public  async Task AddAndSendAsync(NotificationRequest request, CancellationToken ct)
         {
 
             var profile = await _profileRepository.GetByUserIdAsync(request.UserId);
