@@ -15,11 +15,10 @@ namespace E_wallet.Domain.Interfaces
 
         Task<IEnumerable<Transaction>> GetWalletTransactionsAsync(int walletId);
         Task<Wallet> CreateWallet(Wallet wallet, CancellationToken ct);
-        
-        Task<Wallet> DeleteWalletById(Wallet Wallet, CancellationToken ct);
-        Task<Wallet> DeleteWalletById(Wallet PrimaryWallet, Wallet SecondaryWallet, CancellationToken ct);
+        Task<Wallet> DeleteWalletById(int WalletId, int UserId, CancellationToken ct);
+        Task<Wallet> DeleteDefaultWalletById(int UserId, int PrimaryWalletId, int SecondaryWalletId, CancellationToken ct);
 
-        Task<Wallet> SetAsDefault(Wallet Wallet, CancellationToken ct);
+        Task<Wallet> SetAsDefault(int WalletId, CancellationToken ct);
 
 
     }

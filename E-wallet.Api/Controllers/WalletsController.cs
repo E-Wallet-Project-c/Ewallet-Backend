@@ -123,12 +123,12 @@ namespace E_wallet.Api.Controllers
             return Ok(response);
         }
 
-        [HttpDelete("DeleteWallet")]
-        public async Task<IActionResult> DeleteWallet([FromBody] WalletRequest wallet, CancellationToken ct)
+        [HttpDelete("DeleteWallet/{WalletId}/{UserId}")]
+        public async Task<IActionResult> DeleteWallet([FromRoute] int WalletId ,[FromRoute] int UserId, CancellationToken ct)
         {
             try
             {
-                var Wallet = await _walletService.DeleteWalletById(wallet, ct);
+                var Wallet = await _walletService.DeleteWalletById(WalletId,UserId, ct);
                 return Ok(Wallet);
             }
             catch (Exception ex)
@@ -138,12 +138,12 @@ namespace E_wallet.Api.Controllers
 
         }
 
-        [HttpDelete("DeleteDefaultWallet")]
-        public async Task<IActionResult> DeleteDefaultWallet([FromBody] DefaultWalletDeleteRequest wallet, CancellationToken ct)
+        [HttpDelete("DeleteDefaultWallet/{PrimaryWalletId}/{SecondaryWalletId}/{UserId}")]
+        public async Task<IActionResult> DeleteDefaultWallet([FromRoute] int PrimaryWalletId, [FromRoute] int SecondaryWalletId, [FromRoute] int UserId, CancellationToken ct)
         {
             try
             {
-                var Wallet = await _walletService.DeleteDefaultWalletById(wallet, ct);
+                var Wallet = await _walletService.DeleteDefaultWalletById(PrimaryWalletId,SecondaryWalletId,UserId, ct);
                 return Ok(Wallet);
             }
             catch (Exception ex)

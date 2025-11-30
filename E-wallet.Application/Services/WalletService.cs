@@ -113,13 +113,13 @@ namespace E_wallet.Application.Services
 
         }
 
-        public async Task<WalletResponse> DeleteWalletById(WalletRequest Wallet, CancellationToken ct) 
+        public async Task<WalletResponse> DeleteWalletById(int WalletId,int UserId, CancellationToken ct) 
         {
-            var user = await _userRepository.GetByIdAsync(Wallet.UserId, ct);
+            var user = await _userRepository.GetByIdAsync(UserId, ct);
             if (user == null)
                 return null;
 
-            var wallet = await _walletRepo.DeleteWalletById(WalletMapper.ToEntity(Wallet), ct);
+            var wallet = await _walletRepo.DeleteWalletById(WalletId,UserId, ct);
 
             if (wallet == null)
             {
@@ -128,7 +128,7 @@ namespace E_wallet.Application.Services
 
             await _notifications.AddAndSendAsync(new NotificationRequest
             {
-                UserId = Wallet.UserId,
+                UserId = UserId,
                 Content = $"walletwith Id of{wallet.Id} successfully.",
                 Event = NotificationEvents.DeleteWallet.ToString(),
             }, ct);
@@ -138,25 +138,15 @@ namespace E_wallet.Application.Services
         }
 
 
-        public async Task <WalletResponse> DeleteDefaultWalletById(DefaultWalletDeleteRequest Wallet, CancellationToken ct)
+        public async Task <WalletResponse> DeleteDefaultWalletById(int UserId,int PrimaryWalletId, int SecondaryWalletId, CancellationToken ct)
         {
-            var user = await _userRepository.GetByIdAsync(Wallet.UserId, ct);
+            var user = await _userRepository.GetByIdAsync(UserId, ct);
             if (user == null)
                 return null;
 
-            WalletRequest PrimaryWallet = new WalletRequest
-            {
-                UserId = Wallet.UserId,
-                WalletId = Wallet.PrimaryWalletId 
-            };
-            WalletRequest SecondaryWallet = new WalletRequest
-            {
-                UserId = Wallet.UserId,
-                WalletId = Wallet.PrimaryWalletId 
-            };
-
+         
             
-            var wallet = await _walletRepo.DeleteWalletById(WalletMapper.ToEntity(PrimaryWallet),WalletMapper.ToEntity(SecondaryWallet),ct);
+            var wallet = await _walletRepo.DeleteDefaultWalletById(UserId,PrimaryWalletId,SecondaryWalletId,ct);
 
             if (wallet == null)
             {
@@ -164,9 +154,9 @@ namespace E_wallet.Application.Services
             }
             await _notifications.AddAndSendAsync(new NotificationRequest
             {
-                UserId = Wallet.UserId,
-                Content = $"wallet with Id of{PrimaryWallet.WalletId} has been deleted successfully ,and " +
-                $"wallet with Id{SecondaryWallet.WalletId} is default wallet.",
+                UserId = UserId,
+                Content = $"wallet with Id of{PrimaryWalletId} has been deleted successfully ,and " +
+                $"wallet with Id{SecondaryWalletId} is default wallet.",
                 Event = NotificationEvents.DeleteDefaultWallet.ToString(),
             }, ct);
 
@@ -181,7 +171,7 @@ namespace E_wallet.Application.Services
             if (user == null)
                 return null;
             var Wallet_=WalletMapper.ToEntity(Wallet);
-            var wallet = await _walletRepo.SetAsDefault(Wallet_, ct);
+            var wallet = await _walletRepo.SetAsDefault(Wallet_.Id, ct);
             if (wallet == null)
             {
                 return null;

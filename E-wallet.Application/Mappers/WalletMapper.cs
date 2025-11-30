@@ -47,14 +47,9 @@ namespace E_wallet.Application.Mappers
         {
             return new Wallet
             {
-                Id=Wallet.WalletId,
+                
                 UserId = Wallet.UserId,
-                Currency = "JD",
-                IsActive = true,
-                IsDeleted = false,
                 IsDefaultWallet = Wallet.IsDefault,
-                CreatedAt = DateTime.Now,
-                CreatedBy = null
             };
         }
      

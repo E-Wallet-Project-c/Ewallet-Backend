@@ -62,10 +62,10 @@ namespace E_wallet.Infrastrucure.Repositories
             return wallet;
         }
 
-        public async Task<Wallet> DeleteWalletById(Wallet Wallet, CancellationToken ct)
+        public async Task<Wallet> DeleteWalletById(int WalletId,int UserId, CancellationToken ct)
         {
 
-            var wallet = await _context.Wallets.Where(w => w.Id == Wallet.Id && w.UserId == Wallet.UserId).SingleOrDefaultAsync(ct);
+            var wallet = await _context.Wallets.Where(w => w.Id == WalletId && w.UserId == UserId).SingleOrDefaultAsync(ct);
 
             if (wallet.IsDeleted == true || wallet == null|| wallet.IsDefaultWallet) 
             {
@@ -79,12 +79,12 @@ namespace E_wallet.Infrastrucure.Repositories
             await DeleteRelatedItems(wallet,ct);
             return wallet;
         }
-        public async Task<Wallet> DeleteWalletById(Wallet PrimaryWallet, Wallet SecondaryWallet, CancellationToken ct)
+        public async Task<Wallet> DeleteDefaultWalletById(int UserId, int PrimaryWalletId, int SecondaryWalletId, CancellationToken ct)
         {
             
-            var _PrimaryWallet = await _context.Wallets.Where(w => w.Id == PrimaryWallet.Id && w.UserId == PrimaryWallet.UserId && w.IsDefaultWallet==true)
+            var _PrimaryWallet = await _context.Wallets.Where(w => w.Id == PrimaryWalletId && w.UserId == UserId && w.IsDefaultWallet==true)
                 .SingleOrDefaultAsync(ct);
-            var _SecondaryWallet =await _context.Wallets.Where(w => w.Id == SecondaryWallet.Id && w.UserId == SecondaryWallet.UserId && w.IsActive==true && w.IsDefaultWallet == false)
+            var _SecondaryWallet =await _context.Wallets.Where(w => w.Id == SecondaryWalletId && w.UserId == UserId && w.IsActive==true && w.IsDefaultWallet == false)
                 .SingleOrDefaultAsync(ct);
             if (_PrimaryWallet == null )
             {
@@ -97,16 +97,18 @@ namespace E_wallet.Infrastrucure.Repositories
             await _context.SaveChangesAsync();
             await DeleteRelatedItems(_PrimaryWallet, ct);
             
-            return await SetAsDefault(SecondaryWallet, ct);
+            return await SetAsDefault(SecondaryWalletId, ct);
         }
 
    
 
 
-     public async Task<Wallet> SetAsDefault(Wallet Wallet, CancellationToken ct)
+     public async Task<Wallet> SetAsDefault(int WalletId , CancellationToken ct)
         {
-            Wallet? oldwallet = await _context.Wallets.Where(w => w.UserId==Wallet.UserId && w.IsDefaultWallet==true && w.IsActive == true).FirstOrDefaultAsync(ct);
-            Wallet? newwallet = await _context.Wallets.Where(w => w.Id == Wallet.Id && w.IsActive == true).FirstOrDefaultAsync(ct);
+           
+            Wallet? newwallet = await _context.Wallets.Where(w => w.Id == WalletId && w.IsActive == true).FirstOrDefaultAsync(ct);
+            int UserId = newwallet.UserId;
+            Wallet? oldwallet = await _context.Wallets.Where(w => w.UserId == UserId && w.IsDefaultWallet == true && w.IsActive == true).FirstOrDefaultAsync(ct);
 
             if (oldwallet == null || newwallet == null)
             {
