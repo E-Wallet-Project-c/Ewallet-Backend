@@ -153,12 +153,12 @@ namespace E_wallet.Api.Controllers
 
         }
 
-        [HttpPatch("SetDefaultWallet")]
-        public async Task<IActionResult> SetDefaultWallet([FromBody] WalletRequest wallet, CancellationToken ct)
+        [HttpPatch("SetDefaultWallet/{WalletId}/{UserId}")]
+        public async Task<IActionResult> SetDefaultWallet([FromRoute] int WalletId , [FromRoute] int UserId, CancellationToken ct)
         {
             try
             {
-                var Wallet = await _walletService.SetDefaultWallet(wallet, ct);
+                var Wallet = await _walletService.SetDefaultWallet(WalletId,UserId, ct);
                 return Ok(Wallet);
             }
             catch (Exception ex)

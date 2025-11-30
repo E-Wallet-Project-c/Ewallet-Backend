@@ -165,13 +165,13 @@ namespace E_wallet.Application.Services
 
 
 
-        public async Task<WalletResponse> SetDefaultWallet(WalletRequest Wallet, CancellationToken ct)
+        public async Task<WalletResponse> SetDefaultWallet(int WalletId, int UserId, CancellationToken ct)
         {
-            var user = await _userRepository.GetByIdAsync(Wallet.UserId,ct);
+            var user = await _userRepository.GetByIdAsync(UserId,ct);
             if (user == null)
                 return null;
-            var Wallet_=WalletMapper.ToEntity(Wallet);
-            var wallet = await _walletRepo.SetAsDefault(Wallet_.Id, ct);
+            
+            var wallet = await _walletRepo.SetAsDefault(WalletId,UserId, ct);
             if (wallet == null)
             {
                 return null;
