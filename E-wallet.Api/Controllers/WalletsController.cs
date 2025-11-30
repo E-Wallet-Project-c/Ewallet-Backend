@@ -56,12 +56,12 @@ namespace E_wallet.Api.Controllers
 
 
 
-        [HttpGet("GetUserWallets/{UserId}")]
-        public async Task<ActionResult> GetUserWallets([FromRoute] int UserId, CancellationToken ct)
+        [HttpGet("GetUserWallets/{userId}/{PageNumber}/{MaxItem}")]
+        public async Task<ActionResult> GetUserWallets([FromRoute] int UserId, [FromRoute] int PageNumber, [FromRoute] int MaxItems, CancellationToken ct)
         {
             try
             {
-                var response = await _walletService.GetUserWallets(UserId, ct);
+                var response = await _walletService.GetUserWallets(UserId,PageNumber,MaxItems, ct);
 
                 return Ok(response);
             }

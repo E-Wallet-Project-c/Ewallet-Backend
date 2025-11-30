@@ -14,8 +14,8 @@ namespace E_wallet.Application.Interfaces
 
         Task<WalletBalanceResponseDto?> GetWalletBalanceAsync(int walletId);
         Task<WalletResponse?> CreateWallet(WalletRequest newWallet, CancellationToken ct);
+        Task<List<WalletResponse>> GetUserWallets(int UserId, int pagenumber, int Max, CancellationToken ct);
         Task<WalletResponse> GetWalletById(int Id, CancellationToken ct);
-        Task<List<WalletResponse>> GetUserWallets(int UserId, CancellationToken ct);
         Task<Result<TopUpWithdrawResponse>> TopUpToWalletAsync(TopUpWithdrawRequest dto,CancellationToken ct);
         Task<Result<TopUpWithdrawResponse>> WithdrawFromWalletAsync(TopUpWithdrawRequest dto, CancellationToken ct);
         Task<Result<TransferResponse>> TransferFromWalletAsync(TransferRequest dto, CancellationToken ct);

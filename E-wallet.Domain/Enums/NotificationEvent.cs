@@ -13,6 +13,8 @@ namespace E_wallet.Domain.Enums
             TOPUP,
             WITHDRAW,
             CREATEACCOUNT,
+            DeleteWallet,
+            DeleteDefaultWallet,
             CREATEPROFILE,
             TRANSFER,
             CREATEWALLET,

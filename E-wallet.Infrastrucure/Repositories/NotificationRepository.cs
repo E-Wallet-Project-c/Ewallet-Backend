@@ -35,7 +35,7 @@ namespace E_wallet.Infrastrucure.Repositories
 
 
 
-        public async Task<List<Notification>> GetNotificationByUserId(int userId, CancellationToken ct)
+        public async Task<List<Notification>> GetNotificationByUserId(int userId,int PageNumber,int MaxItems, CancellationToken ct)
         {
             return await _Context.Notifications
                 .AsNoTracking()
@@ -54,8 +54,8 @@ namespace E_wallet.Infrastrucure.Repositories
         }
         public async Task<Notification> DeleteNotification (int Id, CancellationToken ct)
         {
-            var notification = await _Context.Notifications.Where(u => u.Id == Id).SingleOrDefaultAsync(ct);
-            if (notification.IsDeleted == true || notification == null)
+            var notification = await _Context.Notifications.Where(n => n.Id == Id && n.IsDeleted == true).SingleOrDefaultAsync(ct);
+            if ( notification == null)
             {
                 return null;
             }
@@ -68,7 +68,7 @@ namespace E_wallet.Infrastrucure.Repositories
 
         public async Task<Notification> SetAsRead(int Id, CancellationToken ct)
         {
-            var notification = await _Context.Notifications.Where(n=> n.Id == Id && n.IsDeleted == false && n.IsActive==true).SingleOrDefaultAsync(ct);
+            var notification = await _Context.Notifications.Where(n=> n.Id == Id &&  n.IsActive==true).SingleOrDefaultAsync(ct);
             if ( notification == null)
             {
                 return null;
@@ -81,7 +81,7 @@ namespace E_wallet.Infrastrucure.Repositories
 
         public async Task<int?> UnreadNotificationCount(int Id, CancellationToken ct)
         {
-            var notification = await _Context.Notifications.Where(n => n.Id == Id && n.IsDeleted == false && n.IsActive == true).SingleOrDefaultAsync(ct);
+            var notification = await _Context.Notifications.Where(n => n.Id == Id  && n.IsActive == true).SingleOrDefaultAsync(ct);
             if (notification == null)
             {
                 return null;
