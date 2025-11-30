@@ -19,8 +19,8 @@ namespace E_wallet.Application.Interfaces
         Task<Result<TopUpWithdrawResponse>> TopUpToWalletAsync(TopUpWithdrawRequest dto,CancellationToken ct);
         Task<Result<TopUpWithdrawResponse>> WithdrawFromWalletAsync(TopUpWithdrawRequest dto, CancellationToken ct);
         Task<Result<TransferResponse>> TransferFromWalletAsync(TransferRequest dto, CancellationToken ct);
-        Task<WalletResponse> DeleteWalletById(WalletRequest Wallet, CancellationToken ct);
-        Task<WalletResponse> DeleteDefaultWalletById(DefaultWalletDeleteRequest Wallet, CancellationToken ct);
+        Task<WalletResponse> DeleteDefaultWalletById(int UserId, int PrimaryWalletId, int SecondaryWalletId, CancellationToken ct);
+        Task<WalletResponse> DeleteWalletById(int WalletId, int UserId, CancellationToken ct);
         Task<WalletResponse> SetDefaultWallet(WalletRequest Wallet, CancellationToken ct);
 
 
