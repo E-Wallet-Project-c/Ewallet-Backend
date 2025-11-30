@@ -66,8 +66,6 @@ namespace E_wallet.Application.Services
 
         public async Task<WalletResponse?> CreateWallet( WalletRequest newWallet)
         {
-            var wallets = await _walletRepo.GetWalletsByUserId(newWallet.UserId);
-            newWallet.IsDefault = wallets.Count == 0;
 
             var user = await _userRepository.GetByIdAsync(newWallet.UserId); 
 
@@ -75,7 +73,7 @@ namespace E_wallet.Application.Services
                 return null;
 
             
-            var savedWallet = await _walletRepo.CreateWallet(WalletMapper.ToEntity(newWallet.UserId, newWallet.IsDefault));
+            var savedWallet = await _walletRepo.CreateWallet(WalletMapper.ToEntity(newWallet));
 
             // Notification
             await _notifications.AddAndSendAsync(new NotificationRequest
@@ -115,6 +113,67 @@ namespace E_wallet.Application.Services
             return WalletMapper.ToListResponse(wallets);
 
         }
+
+        public async Task<WalletResponse> DeleteWalletById(WalletRequest Wallet) 
+        {
+            var user = await _userRepository.GetByIdAsync(Wallet.UserId);
+            if (user == null)
+                return null;
+
+            Wallet wallet = await _walletRepo.DeleteWalletById(WalletMapper.ToEntity(Wallet));
+
+            if (wallet == null)
+            {
+                return null;
+            }
+            return WalletMapper.ToResponse(wallet);
+
+        }
+
+
+        public async Task <WalletResponse> DeleteDefaultWalletById(DefaultWalletDeleteRequest Wallet)
+        {
+            var user = await _userRepository.GetByIdAsync(Wallet.UserId);
+            if (user == null)
+                return null;
+
+            WalletRequest PrimaryWallet = new WalletRequest
+            {
+                UserId = Wallet.UserId,
+                WalletId = Wallet.PrimaryWalletId 
+            };
+            WalletRequest SecondaryWallet = new WalletRequest
+            {
+                UserId = Wallet.UserId,
+                WalletId = Wallet.PrimaryWalletId 
+            };
+
+            
+            Wallet wallet = await _walletRepo.DeleteWalletById(WalletMapper.ToEntity(PrimaryWallet),WalletMapper.ToEntity(SecondaryWallet));
+
+            if (wallet == null)
+            {
+                return null;
+            }
+            return WalletMapper.ToResponse(wallet);
+        }
+
+
+
+        public async Task<WalletResponse> SetDefaultWallet(WalletRequest Wallet)
+        {
+            var user = await _userRepository.GetByIdAsync(Wallet.UserId);
+            if (user == null)
+                return null;
+            var Wallet_=WalletMapper.ToEntity(Wallet);
+            var wallet = await _walletRepo.SetAsDefault(Wallet_);
+            if (wallet == null)
+            {
+                return null;
+            }
+            return WalletMapper.ToResponse(wallet);
+        }
+
 
         #region TopUpToWalletAsync
 
