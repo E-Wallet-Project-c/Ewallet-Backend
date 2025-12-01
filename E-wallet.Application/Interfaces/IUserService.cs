@@ -13,13 +13,13 @@ namespace E_wallet.Application.Interfaces
         Task<UserRegisterResponse> RegisterUserAsync(UserRegisterRequest dto, CancellationToken ct);
 
         Task<UserRegisterResponse> ForgetPasswordAsync(ForgetPasswordEmailrequest dto, CancellationToken ct);
-        Task<UserRegisterResponse> GenaratenewPasswordAsync(NewPasswordrequest dto);
+        Task<UserRegisterResponse> GenaratenewPasswordAsync(NewPasswordrequest dto, CancellationToken ct);
 
         Task<Result<AuthResponse>> RefreshTokenAsync(RefreshTokenRequest refreshRequest);
         Task<Result<AuthResponse>> LoginAsync(UserLoginRequest dto, CancellationToken ct);
         Task<Result> LogoutAsync(RefreshTokenRequest refreshRequest);
 
-        Task<string> VerifyOtpAsync(VerifyOtpRequest dto);
+        Task<string> VerifyOtpAsync(VerifyOtpRequest dto, CancellationToken ct);
 
 
     }
