@@ -4,6 +4,7 @@ using E_wallet.Application.Interfaces;
 using E_wallet.Application.Mappers;
 using E_wallet.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -17,12 +18,15 @@ namespace E_wallet.Application.Services
     {
         private readonly ISessionRepository _sessionRepository;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<JwtService> _logger;
         //private readonly SessionMapper _mapper;
         public JwtService(ISessionRepository sessionRepository,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ILogger<JwtService> logger)
         {
             _sessionRepository = sessionRepository;
             _configuration = configuration;
+            _logger = logger; 
         }
         #region Generate access and refresh token
         public async Task<AuthResponse> GenerateToken(GenerateTokenRequest request)
@@ -46,6 +50,7 @@ namespace E_wallet.Application.Services
             var refreshToken = GenerateRandomString();
             var refreshTokenExpiryInDays = DateTime.UtcNow.AddMinutes( int.Parse(jwtSettings["RefreshTokenExpirationInMinutes"]!));
 
+            _logger.LogInformation($"TEEEEEEEEEEEEEEEEEEST");
 
             await SaveRefreshTokenToDatabase(userId, refreshToken, refreshTokenExpiryInDays);
             return refreshToken;
@@ -108,7 +113,7 @@ namespace E_wallet.Application.Services
                 SigningCredentials = new SigningCredentials(
 
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
-                SecurityAlgorithms.HmacSha512Signature)
+                SecurityAlgorithms.HmacSha256)
 
             };
             var tokenHandler = new JwtSecurityTokenHandler();
