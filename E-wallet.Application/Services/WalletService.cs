@@ -43,7 +43,7 @@ namespace E_wallet.Application.Services
             _limitRepository = limitRepository;
             _notifications = notifications;
             _hubContext = hubContext;
-            _userRepository= userRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<WalletBalanceResponseDto?> GetWalletBalanceAsync(int walletId)
@@ -224,7 +224,7 @@ namespace E_wallet.Application.Services
                 Event = "Wallet Top-Up",
             },ct);
 
-            
+
 
             return Result<TopUpWithdrawResponse>.Success(new TopUpWithdrawResponse
             {
@@ -419,6 +419,22 @@ namespace E_wallet.Application.Services
             return ((double?)totalAmount + amount) > dailyAmountLimit.Value;
             //
             //
+        }
+
+        #endregion
+
+        #region GetUserDefaultWallet
+        public async Task<WalletResponse> GetUserDefaultWallet(int userId, CancellationToken ct)
+        {
+            var user = await _userRepository.GetByIdAsync(userId,ct);
+            if (user == null)
+                return null;
+
+            var wallet = await _walletRepo.GetUserDefaultWallet(userId);
+            if (wallet == null)
+                return null;
+
+            return WalletMapper.ToResponse(wallet);
         }
 
         #endregion

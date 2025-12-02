@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace E_wallet.Application.Interfaces
 {
-    public interface ITransactionRepository
+    public interface ITransactionService
     {
     }
 }

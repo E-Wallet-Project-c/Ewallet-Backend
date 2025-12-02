@@ -87,42 +87,6 @@ namespace E_wallet.Api.Controllers
         }
 
 
-        [HttpPost("TopUpWallet")]
-        public async Task<IActionResult> TopUpWallet([FromBody] TopUpWithdrawRequest request, CancellationToken ct)
-        {
-            var response = await _walletService.TopUpToWalletAsync(request,ct);
-
-            if (!response.IsSuccess)
-                return BadRequest(response);
-
-
-            return Ok(response);
-        }
-
-        [HttpPost("WithdrawWallet")]
-        public async Task<IActionResult> WithdrawBankAccount([FromBody] TopUpWithdrawRequest request, CancellationToken ct)
-        {
-            var response = await _walletService.WithdrawFromWalletAsync(request,ct);
-
-            if (!response.IsSuccess)
-                return BadRequest(response);
-
-
-            return Ok(response);
-        }
-
-        [HttpPost("TransferFromWallet")]
-        public async Task<IActionResult> TransferFromWallet([FromBody] TransferRequest request, CancellationToken ct)
-        {
-            var response = await _walletService.TransferFromWalletAsync(request,ct);
-
-            if (!response.IsSuccess)
-                return BadRequest(response);
-
-
-            return Ok(response);
-        }
-
         [HttpDelete("DeleteWallet/{WalletId}/{UserId}")]
         public async Task<IActionResult> DeleteWallet([FromRoute] int WalletId ,[FromRoute] int UserId, CancellationToken ct)
         {
@@ -160,6 +124,21 @@ namespace E_wallet.Api.Controllers
             {
                 var Wallet = await _walletService.SetDefaultWallet(WalletId,UserId, ct);
                 return Ok(Wallet);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"{ex.Message}");
+            }
+
+        }
+
+        [HttpGet("GetDefaultWalletByUserId/{userId}")]
+        public async Task<ActionResult> GetDefaultWalletByUserId([FromRoute] int userId ,CancellationToken ct)
+        {
+            try
+            {
+                var wallet = await _walletService.GetUserDefaultWallet(userId,ct);
+                return Ok(wallet);
             }
             catch (Exception ex)
             {

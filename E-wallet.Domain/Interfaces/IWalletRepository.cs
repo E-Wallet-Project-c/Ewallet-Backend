@@ -20,6 +20,10 @@ namespace E_wallet.Domain.Interfaces
 
         Task<Wallet> SetAsDefault(int WalletId,int UserId, CancellationToken ct);
 
+        Task<Wallet?> GetUserDefaultWallet(int userId);
+
+
+
 
     }
 }

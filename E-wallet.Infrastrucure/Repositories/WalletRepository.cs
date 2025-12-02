@@ -67,13 +67,13 @@ namespace E_wallet.Infrastrucure.Repositories
 
             var wallet = await _context.Wallets.Where(w => w.Id == WalletId && w.UserId == UserId).SingleOrDefaultAsync(ct);
 
-            if (wallet.IsDeleted == true || wallet == null|| wallet.IsDefaultWallet) 
+            if (wallet.IsDeleted == true || wallet == null || wallet.IsDefaultWallet)
             {
                 return null;
-            }       
+            }
             wallet.IsActive = false;
             wallet.IsDeleted = true;
-            wallet.IsDefaultWallet= false;
+            wallet.IsDefaultWallet = false;
             wallet.UpdatedAt = DateTime.Now;
             await _context.SaveChangesAsync(ct);
             await DeleteRelatedItems(wallet,ct);
@@ -92,7 +92,7 @@ namespace E_wallet.Infrastrucure.Repositories
             }
             _PrimaryWallet.IsActive = false;
             _PrimaryWallet.IsDeleted = true;
-            _PrimaryWallet.IsDefaultWallet= false;
+            _PrimaryWallet.IsDefaultWallet = false;
             _PrimaryWallet.UpdatedAt = DateTime.Now;
             await _context.SaveChangesAsync();
             await DeleteRelatedItems(_PrimaryWallet, ct);
@@ -100,7 +100,7 @@ namespace E_wallet.Infrastrucure.Repositories
             return await SetAsDefault(SecondaryWalletId,UserId, ct);
         }
 
-   
+
 
 
      public async Task<Wallet> SetAsDefault(int WalletId, int UserId, CancellationToken ct)
@@ -125,7 +125,7 @@ namespace E_wallet.Infrastrucure.Repositories
             var existingWallet = await _context.Wallets.Where(w=>w.Id==wallet.Id && w.UserId==wallet.UserId).FirstOrDefaultAsync(ct);
             if (existingWallet == null)
             {
-                return ;
+                return;
             }
             var Transactions = _context.Transactions.Where(t => t.WalletId == wallet.Id).ToList();
 
@@ -162,5 +162,14 @@ namespace E_wallet.Infrastrucure.Repositories
 
             }
         }
+
+
+        public async Task<Wallet?> GetUserDefaultWallet(int userId)
+        {
+            return await _context.Wallets
+                .AsNoTracking()
+                .FirstOrDefaultAsync(w => w.UserId == userId && w.IsDefaultWallet);
+        }
+
     }
 }

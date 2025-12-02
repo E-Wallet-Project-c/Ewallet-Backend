@@ -45,7 +45,7 @@ namespace E_wallet.Application.Mappers
             return new Transaction
             {
                 WalletId = dto.SenderWalletId,
-                Amount = dto.TransferFee,
+                Amount = 1,//dto.TransferFee,
                 TransferId = transferId,
                 Type = Domain.Enums.TransactionType.Debit,
                 Action = Domain.Enums.TransactionAction.Fee,

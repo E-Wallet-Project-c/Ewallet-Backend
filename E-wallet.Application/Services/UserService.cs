@@ -6,6 +6,7 @@ using E_wallet.Application.Mappers;
 using E_wallet.Domain.Entities;
 using E_wallet.Domain.IHelpers;
 using E_wallet.Domain.Interfaces;
+using E_wallet.Infrastrucure.Repositories;
 namespace E_wallet.Application.Services
 {
     public class UserService : IUserService
@@ -15,27 +16,31 @@ namespace E_wallet.Application.Services
         private readonly IEmailHelper _emailHelper;
         private readonly IJwtService _jwtService;
         private readonly ISessionRepository _sessionRepository;
+        private readonly IUnitOfWork _unitOfWork;
+
         public UserService(IUserRepository userRepository,
             IEmailHelper mailingHelper,
             IJwtService jwtService,
-            ISessionRepository sessionRepository)
+            ISessionRepository sessionRepository,
+            IUnitOfWork unitOfWork)
         {
             _userRepository = userRepository;
             _emailHelper = mailingHelper;
             _jwtService = jwtService;
             _sessionRepository = sessionRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<UserRegisterResponse> RegisterUserAsync(UserRegisterRequest dto, CancellationToken ct)
         {
 
-            var existingUser = await _userRepository.GetByEmailAsync(dto.Email,ct);
+            var existingUser = await _userRepository.GetByEmailAsync(dto.Email, ct);
             if (existingUser != null)
             {
                 return UserMapper.Failure("Email is already registered.");
             }
             //hashing the password
-            //dto.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+            dto.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
             //generate OTP 
             var otpCode = new Random().Next(100000, 999999).ToString();
@@ -45,13 +50,13 @@ namespace E_wallet.Application.Services
             user.OtpCode = otpCode;
             user.OtpExpiry = otpExpiry;
             user.IsVerified = false;
-
-            user = await _userRepository.AddAsync(user);
-
-
-            await _emailHelper.SendOtpEmailAsync(user.Email, user.OtpCode,"User");
-
-           return UserMapper.toResponseRegister(user);
+            //save the user 
+            user = await _unitOfWork.Users.AddAsync(user);
+            //create default wallet on register
+            Wallet wallet = WalletMapper.ToEntity(new WalletRequest { IsDefault = true, UserId = user.Id });
+            _unitOfWork.Wallets.CreateWallet(wallet, ct);
+            await _emailHelper.SendOtpEmailAsync(user.Email, user.OtpCode, "User");
+            return UserMapper.toResponseRegister(user);
         }
 
         
@@ -62,7 +67,7 @@ namespace E_wallet.Application.Services
             {
                 return UserMapper.Failure("User does not exist");
             }
-            if (user.Password==dto.newPassword)
+            if (user.Password == dto.newPassword)
             {
                 return UserMapper.Failure("The new password must be different form the old password");
             }
@@ -70,18 +75,18 @@ namespace E_wallet.Application.Services
            
             await _userRepository.UpadteChangesAsync(user, ct);
             return UserMapper.toResponseRegister(user);
-        
+
 
 
             // Send otp code via email
             return UserMapper.toResponseRegister(user);
 
-            
+
         }
         public async Task<UserRegisterResponse?> ForgetPasswordAsync(ForgetPasswordEmailrequest dto, CancellationToken ct)
         {
 
-            User user = await _userRepository.GetByEmailAsync(dto.Email,ct);
+            User user = await _userRepository.GetByEmailAsync(dto.Email, ct);
             if (user == null)
             {
                 return null;
@@ -94,24 +99,24 @@ namespace E_wallet.Application.Services
             user.OtpExpiry = otpExpiry;
             await _userRepository.UpadteChangesAsync(user, ct);
 
-            await _emailHelper.SendOtpEmailAsync(user.Email, user.OtpCode,user.FullName);
+            await _emailHelper.SendOtpEmailAsync(user.Email, user.OtpCode, user.FullName);
 
             return UserMapper.toResponseRegister(user);
         }
 
-        
+
 
         public async Task<Result<AuthResponse>> LoginAsync(UserLoginRequest dto, CancellationToken ct)
         {
             //check email if exist 
-            User existingUser = await _userRepository.GetByEmailAsync(dto.Email,ct);
-            //!BCrypt.Net.BCrypt.Verify(dto.Password, existingUser.Password) 
-            if (existingUser == null || !string.Equals(dto.Password, existingUser.Password))
+            User existingUser = await _userRepository.GetByEmailAsync(dto.Email, ct);
+            //if (existingUser == null || !string.Equals(dto.Password, existingUser.Password))
+            if (existingUser == null || !BCrypt.Net.BCrypt.Verify(dto.Password, existingUser.Password))
             {
                 return Result<AuthResponse>.Failure("Invalid email or password");
             }
             GenerateTokenRequest generateTokenRequest = AuthMapper.ToTokenRequest(existingUser);
-            AuthResponse authResponse =  await  _jwtService.GenerateToken(generateTokenRequest);
+            AuthResponse authResponse = await _jwtService.GenerateToken(generateTokenRequest);
 
             return Result<AuthResponse>.Success(authResponse);
         }
@@ -151,7 +156,7 @@ namespace E_wallet.Application.Services
                 return Result<AuthResponse>.Failure("Invalid or expired refresh token");
 
             var tokenRequest = AuthMapper.ToTokenRequest(storedToken.User);
-            var newAccessToken =  _jwtService.GenerateToken(tokenRequest); 
+            var newAccessToken = _jwtService.GenerateToken(tokenRequest);
 
             return Result<AuthResponse>.Success(await newAccessToken);
         }

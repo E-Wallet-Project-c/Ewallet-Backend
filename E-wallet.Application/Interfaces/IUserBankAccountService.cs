@@ -14,7 +14,8 @@ namespace E_wallet.Application.Interfaces
         Task<Result<UserBankAccountResponse>> CreateBankAsync(UserBankAccountRequest dto);
         Task<Result<List<UserBankAccountResponse>>> GetAllByWalletIdAsync(int walletId);
 
-        
+        Task<Result<UserBankAccountResponse>> UpdateStatusAsync(UpdateUserBankAccountRequest dto);
+
 
 
 
