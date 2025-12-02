@@ -24,7 +24,6 @@ namespace E_wallet.Application.Interfaces
         Task<WalletResponse> SetDefaultWallet(int WalletId,int UserId, CancellationToken ct);
         Task<WalletResponse> GetUserDefaultWallet(int UserId, CancellationToken ct);
 
-
     }
 
 }
