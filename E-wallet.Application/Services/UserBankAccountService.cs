@@ -13,10 +13,12 @@ using System.Threading.Tasks;
 
 namespace E_wallet.Application.Services
 {
-    public class UserBankAccountService: IUserBankAccountService
+    public class UserBankAccountService : IUserBankAccountService
     {
+
         private readonly IUserBankAccountRepository _userBankAccountRepository;
-        public UserBankAccountService(IUserBankAccountRepository userBankAccountRepository) {
+        public UserBankAccountService(IUserBankAccountRepository userBankAccountRepository)
+        {
             _userBankAccountRepository = userBankAccountRepository;
 
         }
@@ -41,6 +43,19 @@ namespace E_wallet.Application.Services
             }
 
             return Result<List<UserBankAccountResponse>>.Success(responseList);
+
+        }
+
+
+        public async Task<Result<UserBankAccountResponse>> UpdateStatusAsync(UpdateUserBankAccountRequest dto)
+        {
+            var userBankAccounts = await _userBankAccountRepository.GetByIdAsync(dto.Id);
+            if (userBankAccounts==null)
+            {
+                return Result<UserBankAccountResponse>.Failure("user bank account not exist");
+            }
+            await _userBankAccountRepository.UpdateStatusByIdAsync(dto.Id, dto.IsActive);
+            return Result<UserBankAccountResponse>.Success(UserBankAccountMapper.toResponse(userBankAccounts));
 
         }
 

@@ -10,18 +10,18 @@ using System.Threading.Tasks;
 
 namespace E_wallet.Infrastrucure.Repositories
 {
-    public class UserBankAccountRepository:IUserBankAccountRepository
+    public class UserBankAccountRepository : IUserBankAccountRepository
     {
         private readonly ApplicationDbContext _context;
         public UserBankAccountRepository(ApplicationDbContext context)
         {
             _context = context;
         }
-       
+
 
         public async Task<UserBankAccount> AddAsync(UserBankAccount userBankAccount)
         {
-           var userBank= await _context.UserBankAccounts.AddAsync(userBankAccount);
+            var userBank = await _context.UserBankAccounts.AddAsync(userBankAccount);
             await _context.SaveChangesAsync();
             userBankAccount.Id = userBank.Entity.Id;
             return userBankAccount;
@@ -30,7 +30,7 @@ namespace E_wallet.Infrastrucure.Repositories
 
         public async Task<UserBankAccount> EditAsync(UserBankAccount userBankAccount)
         {
-             _context.UserBankAccounts.Update(userBankAccount);
+            _context.UserBankAccounts.Update(userBankAccount);
             await _context.SaveChangesAsync();
             return userBankAccount;
 
@@ -50,6 +50,26 @@ namespace E_wallet.Infrastrucure.Repositories
                 .AsNoTracking()
                 .Where(u => u.WalletId == walletId)
                 .ToListAsync();
+        }
+
+
+
+        public async Task<UserBankAccount> UpdateStatusByIdAsync(int Id, bool status)
+        {
+            Console.WriteLine("Id received in UpdateStatusByIdAsync: " + Id);
+
+            // Fetch the entity
+            var userBankAccount  =await _context.UserBankAccounts.FirstOrDefaultAsync(U => U.Id == Id);
+
+            //Update the status
+            userBankAccount.IsActive = status; // assuming you have a Status property
+
+            //Save changes
+            await _context.SaveChangesAsync();
+
+            //Return the updated entity
+            return userBankAccount;
+
         }
 
     }

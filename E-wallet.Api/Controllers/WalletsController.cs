@@ -87,42 +87,7 @@ namespace E_wallet.Api.Controllers
         }
 
 
-        [HttpPost("TopUpWallet")]
-        public async Task<IActionResult> TopUpWallet([FromBody] TopUpWithdrawRequest request)
-        {
-            var response = await _walletService.TopUpToWalletAsync(request);
-
-            if (!response.IsSuccess)
-                return BadRequest(response);
-
-
-            return Ok(response);
-        }
-
-        [HttpPost("WithdrawWallet")]
-        public async Task<IActionResult> WithdrawBankAccount([FromBody] TopUpWithdrawRequest request)
-        {
-            var response = await _walletService.WithdrawFromWalletAsync(request);
-
-            if (!response.IsSuccess)
-                return BadRequest(response);
-
-
-            return Ok(response);
-        }
-
-        [HttpPost("TransferFromWallet")]
-        public async Task<IActionResult> TransferFromWallet([FromBody] TransferRequest request)
-        {
-            var response = await _walletService.TransferFromWalletAsync(request);
-
-            if (!response.IsSuccess)
-                return BadRequest(response);
-
-
-            return Ok(response);
-        }
-
+       
         [HttpDelete("DeleteWallet")]
         public async Task<IActionResult> DeleteWallet([FromBody] WalletRequest wallet)
         {
@@ -160,6 +125,21 @@ namespace E_wallet.Api.Controllers
             {
                 var Wallet = await _walletService.SetDefaultWallet(wallet);
                 return Ok(Wallet);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"{ex.Message}");
+            }
+
+        }
+
+        [HttpGet("GetDefaultWalletByUserId/{userId}")]
+        public async Task<ActionResult> GetDefaultWalletByUserId([FromRoute] int userId)
+        {
+            try
+            {
+                var wallet = await _walletService.GetUserDefaultWallet(userId);
+                return Ok(wallet);
             }
             catch (Exception ex)
             {

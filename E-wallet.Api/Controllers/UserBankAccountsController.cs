@@ -45,5 +45,17 @@ namespace E_wallet.Api.Controllers
         }
 
 
+        [HttpPost("Update-Status-User-Bank-Account")]
+        public async Task<IActionResult> GetAllByWalletIdAsync(UpdateUserBankAccountRequest dto )
+        {
+            var response = await _userBankAccountService.UpdateStatusAsync(dto);
+            if (!response.IsSuccess)
+                return BadRequest(response);
+
+
+            return Ok(response);
+        }
+
+
     }
 }

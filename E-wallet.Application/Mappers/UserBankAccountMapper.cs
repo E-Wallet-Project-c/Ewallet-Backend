@@ -18,7 +18,10 @@ namespace E_wallet.Application.Mappers
                 BankName = dto.BankName,
                 AccountNumber = dto.AccountNumber,
                 WalletId = dto.WalletId,
-                Balance = dto.Balance
+                Balance = dto.Balance,
+                IsActive = true,
+                CreatedAt = TimeOnly.FromDateTime(DateTime.UtcNow),
+                CreatedBy = "System"
             };
         }
 

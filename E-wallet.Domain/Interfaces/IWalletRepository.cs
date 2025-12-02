@@ -21,6 +21,10 @@ namespace E_wallet.Domain.Interfaces
 
         Task<Wallet> SetAsDefault(Wallet Wallet);
 
+        Task<Wallet?> GetUserDefaultWallet(int userId);
+
+
+
 
     }
 }

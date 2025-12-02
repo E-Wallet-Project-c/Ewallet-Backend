@@ -43,7 +43,7 @@ namespace E_wallet.Application.Services
             _limitRepository = limitRepository;
             _notifications = notifications;
             _hubContext = hubContext;
-            _userRepository= userRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<WalletBalanceResponseDto?> GetWalletBalanceAsync(int walletId)
@@ -64,15 +64,15 @@ namespace E_wallet.Application.Services
             };
         }
 
-        public async Task<WalletResponse?> CreateWallet( WalletRequest newWallet)
+        public async Task<WalletResponse?> CreateWallet(WalletRequest newWallet)
         {
 
-            var user = await _userRepository.GetByIdAsync(newWallet.UserId); 
+            var user = await _userRepository.GetByIdAsync(newWallet.UserId);
 
             if (user == null)
                 return null;
 
-            
+
             var savedWallet = await _walletRepo.CreateWallet(WalletMapper.ToEntity(newWallet));
 
             // Notification
@@ -83,15 +83,16 @@ namespace E_wallet.Application.Services
                 Event = "Wallet Creation",
                 Type = "InApp"
             });
-            
-            
+
+
 
             return WalletMapper.ToResponse(savedWallet);
         }
         public async Task<WalletResponse> GetWalletById(int Id)
         {
-            Wallet wallet = await  _walletRepo.GetWalletByIdAsync(Id);
-            if (wallet == null) {
+            Wallet wallet = await _walletRepo.GetWalletByIdAsync(Id);
+            if (wallet == null)
+            {
                 return null;
             }
 
@@ -114,7 +115,7 @@ namespace E_wallet.Application.Services
 
         }
 
-        public async Task<WalletResponse> DeleteWalletById(WalletRequest Wallet) 
+        public async Task<WalletResponse> DeleteWalletById(WalletRequest Wallet)
         {
             var user = await _userRepository.GetByIdAsync(Wallet.UserId);
             if (user == null)
@@ -131,7 +132,7 @@ namespace E_wallet.Application.Services
         }
 
 
-        public async Task <WalletResponse> DeleteDefaultWalletById(DefaultWalletDeleteRequest Wallet)
+        public async Task<WalletResponse> DeleteDefaultWalletById(DefaultWalletDeleteRequest Wallet)
         {
             var user = await _userRepository.GetByIdAsync(Wallet.UserId);
             if (user == null)
@@ -140,16 +141,16 @@ namespace E_wallet.Application.Services
             WalletRequest PrimaryWallet = new WalletRequest
             {
                 UserId = Wallet.UserId,
-                WalletId = Wallet.PrimaryWalletId 
+                WalletId = Wallet.PrimaryWalletId
             };
             WalletRequest SecondaryWallet = new WalletRequest
             {
                 UserId = Wallet.UserId,
-                WalletId = Wallet.PrimaryWalletId 
+                WalletId = Wallet.PrimaryWalletId
             };
 
-            
-            Wallet wallet = await _walletRepo.DeleteWalletById(WalletMapper.ToEntity(PrimaryWallet),WalletMapper.ToEntity(SecondaryWallet));
+
+            Wallet wallet = await _walletRepo.DeleteWalletById(WalletMapper.ToEntity(PrimaryWallet), WalletMapper.ToEntity(SecondaryWallet));
 
             if (wallet == null)
             {
@@ -165,7 +166,7 @@ namespace E_wallet.Application.Services
             var user = await _userRepository.GetByIdAsync(Wallet.UserId);
             if (user == null)
                 return null;
-            var Wallet_=WalletMapper.ToEntity(Wallet);
+            var Wallet_ = WalletMapper.ToEntity(Wallet);
             var wallet = await _walletRepo.SetAsDefault(Wallet_);
             if (wallet == null)
             {
@@ -220,7 +221,7 @@ namespace E_wallet.Application.Services
                 Type = "InApp"
             });
 
-            
+
 
             return Result<TopUpWithdrawResponse>.Success(new TopUpWithdrawResponse
             {
@@ -418,6 +419,22 @@ namespace E_wallet.Application.Services
             return ((double?)totalAmount + amount) > dailyAmountLimit.Value;
             //
             //
+        }
+
+        #endregion
+
+        #region GetUserDefaultWallet
+        public async Task<WalletResponse> GetUserDefaultWallet(int userId)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
+                return null;
+
+            var wallet = await _walletRepo.GetUserDefaultWallet(userId);
+            if (wallet == null)
+                return null;
+
+            return WalletMapper.ToResponse(wallet);
         }
 
         #endregion

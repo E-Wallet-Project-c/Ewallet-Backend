@@ -18,7 +18,7 @@ namespace E_wallet.Application.Mappers
               SenderWalletId=dto.SenderWalletId,
               ReciverWalletId=dto.ReceiverWalletId,
               Amount=dto.Amount,
-              Fee=dto.TransferFee,
+              Fee=1,//dto.TransferFee,
               IsActive=true,
               CreatedAt=DateTime.Now
 

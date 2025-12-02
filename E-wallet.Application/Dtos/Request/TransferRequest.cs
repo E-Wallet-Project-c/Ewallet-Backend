@@ -11,6 +11,6 @@ namespace E_wallet.Application.Dtos.Request
         public int SenderWalletId { get; set; }
         public int ReceiverWalletId { get; set; }
         public int Amount { get; set; }
-        public double TransferFee { get; set; }
+        //public double TransferFee { get; set; }
     }
 }
