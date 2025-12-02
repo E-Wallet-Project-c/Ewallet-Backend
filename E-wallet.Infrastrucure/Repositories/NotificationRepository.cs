@@ -23,49 +23,77 @@ namespace E_wallet.Infrastrucure.Repositories
       
 
 
-        public async Task<Notification?> AddNotification(Notification notification)
+        public async Task<Notification?> AddNotification(Notification notification, CancellationToken ct)
         {
             notification.IsActive = true;
             notification.Id = 18;
-            await _Context.Notifications.AddAsync(notification);
-            await _Context.SaveChangesAsync();
+            await _Context.Notifications.AddAsync(notification,ct);
+            await _Context.SaveChangesAsync(ct);
             return notification;
         }
 
 
 
 
-        public async Task<List<Notification>> GetNotificationByUserId(int userId)
+        public async Task<List<Notification>> GetNotificationByUserId(int userId,int PageNumber,int MaxItems, CancellationToken ct)
         {
             return await _Context.Notifications
                 .AsNoTracking()
                 .Where(n => n.UserId == userId && n.IsActive == true)
-                .ToListAsync();
+                .ToListAsync(ct);
         }
 
 
 
-        public async Task<Notification?> GetById(int WallletId)
+        public async Task<Notification?> GetById(int WallletId, CancellationToken ct)
         {
             return await _Context.Notifications
                 .AsNoTracking()
                 .Where(w => w.Id == WallletId && w.IsActive == true)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync(ct);
         }
-        public async Task<Notification> DeleteNotification (int Id)
+        public async Task<Notification> DeleteNotification (int Id, CancellationToken ct)
         {
-            var notification = await _Context.Notifications.Where(u => u.Id == Id).SingleOrDefaultAsync();
-            if (notification.IsDeleted == true || notification == null)
+            var notification = await _Context.Notifications.Where(n => n.Id == Id && n.IsDeleted == true).SingleOrDefaultAsync(ct);
+            if ( notification == null)
             {
                 return null;
             }
             notification.IsActive = false;
             notification.IsDeleted = true;
             notification.UpdatedAt = DateTime.Now;
-            await _Context.SaveChangesAsync();
+            await _Context.SaveChangesAsync(ct);
             return notification;
         }
 
+        public async Task<Notification> SetAsRead(int Id, CancellationToken ct)
+        {
+            var notification = await _Context.Notifications.Where(n=> n.Id == Id &&  n.IsActive==true).SingleOrDefaultAsync(ct);
+            if ( notification == null)
+            {
+                return null;
+            }
+            notification.IsRead = true;
+            notification.UpdatedAt = DateTime.Now;
+            await _Context.SaveChangesAsync(ct);
+            return notification;
+        }
+
+        public async Task<int?> UnreadNotificationCount(int Id, CancellationToken ct)
+        {
+            var notification = await _Context.Notifications.Where(n => n.Id == Id  && n.IsActive == true).SingleOrDefaultAsync(ct);
+            if (notification == null)
+            {
+                return null;
+            }
+
+            var count = await _Context.Notifications
+                .AsNoTracking()
+                .Where(n => n.UserId == Id && n.IsRead == false && n.IsActive == true && n.IsDeleted == false)
+                .CountAsync(ct);
+            return count;
+
+        }
 
     }
 }

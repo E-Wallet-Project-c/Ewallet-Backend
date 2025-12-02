@@ -42,16 +42,20 @@ namespace E_wallet.Application.Services
 
 
       
-        public async Task<List<NotificationResponse>?> GetUserNotifications(int UserId)
-        {
-            if (await _userRepository.GetByIdAsync(UserId) == null)
+        public async Task<List<NotificationResponse>?> GetUserNotifications(int UserId,int PageNumber,int MaxItems, CancellationToken ct)
+        { 
+            if (UserId < 0)
+            {
+                return null;
+            }
+            if (await _userRepository.GetByIdAsync(UserId,ct) == null)
             {
                 return null;
             }
 
             List<Notification> notifications;
 
-                notifications = await _notificationRepository.GetNotificationByUserId(UserId);
+                notifications = await _notificationRepository.GetNotificationByUserId(UserId,PageNumber,MaxItems,ct);
 
             if ( notifications.Count == 0)
                 return null;
@@ -60,14 +64,18 @@ namespace E_wallet.Application.Services
         }
 
 
-        public  async Task<NotificationResponse?> DeleteUserNotification(int Id)
+        public  async Task<NotificationResponse?> DeleteUserNotification(int Id, CancellationToken ct)
         {
-            if (await _notificationRepository.GetById(Id) == null)
+            if (Id < 0)
+            {
+                return null;
+            }
+            if (await _notificationRepository.GetById(Id,ct) == null)
             {
                 return null;
             }
 
-            var deleted = await _notificationRepository.DeleteNotification(Id);
+            var deleted = await _notificationRepository.DeleteNotification(Id,ct);
 
             if (deleted == null)
                 return null;
@@ -76,11 +84,33 @@ namespace E_wallet.Application.Services
                 NotificationMapper.ToNotificationDto(deleted);
         }
 
-    
 
-      
+        public async Task<int?> UnReadNotificationCount(int UserId, CancellationToken ct)
+        {
+            if(UserId < 0)
+            {
+                return null;
+            }
+            if (await _userRepository.GetByIdAsync(UserId,ct) == null)
+            {
+                return null;
+            }
+            return await _notificationRepository.UnreadNotificationCount(UserId, ct);
+        }
 
-        public async Task AddAndSendAsync(NotificationRequest request)
+
+        public async Task<Notification> SetAsRead(int Id, CancellationToken ct)
+        {
+            if (Id < 0)
+            {
+                return null;
+            }
+            return await _notificationRepository.SetAsRead(Id,ct);
+        }
+
+
+
+        public  async Task AddAndSendAsync(NotificationRequest request, CancellationToken ct)
         {
 
             var profile = await _profileRepository.GetByUserIdAsync(request.UserId);
@@ -88,7 +118,7 @@ namespace E_wallet.Application.Services
             if (profile == null)
                 return;
 
-            var user = await _userRepository.GetByIdAsync(request.UserId); 
+            var user = await _userRepository.GetByIdAsync(request.UserId,ct); 
 
             if (user == null)
                 return ;
@@ -97,7 +127,7 @@ namespace E_wallet.Application.Services
          
 
 
-            var inAppSaved = await _notificationRepository.AddNotification(inAppNotification);
+            var inAppSaved = await _notificationRepository.AddNotification(inAppNotification, ct);
 
             if (inAppSaved is null)
                 return;

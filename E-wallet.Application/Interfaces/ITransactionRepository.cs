@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_wallet.Domain.Enums
+namespace E_wallet.Application.Interfaces
 {
-    public enum NotificationType
+    public interface ITransactionRepository
     {
-        EMAIL,
-        SMS,
-        INAPP
     }
 }

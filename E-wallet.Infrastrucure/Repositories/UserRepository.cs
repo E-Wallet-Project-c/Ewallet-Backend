@@ -23,9 +23,9 @@ namespace E_wallet.Infrastrucure.Repositories
         {
             return await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email && u.IsDeleted ==false ,ct);
         }
-        public async Task<User?> GetByIdAsync(int id)
+        public async Task<User?> GetByIdAsync(int id, CancellationToken ct)
         {
-            return await _context.Users.AsNoTracking().FirstOrDefaultAsync(U => U.Id == id &&  U.IsDeleted == false);
+            return await _context.Users.AsNoTracking().FirstOrDefaultAsync(U => U.Id == id &&  U.IsDeleted == false,ct);
         }
 
 
@@ -35,10 +35,10 @@ namespace E_wallet.Infrastrucure.Repositories
             await _context.SaveChangesAsync();
             return user;
         }
-        public async Task UpadteChangesAsync(User user)
+        public async Task UpadteChangesAsync(User user, CancellationToken ct)
         {
             _context.Users.Update(user);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(ct);
         }
 
 
