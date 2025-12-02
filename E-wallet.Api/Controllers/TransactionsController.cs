@@ -16,9 +16,9 @@ namespace E_wallet.Api.Controllers
             _walletService = walletService;
         }
         [HttpPost("TopUpWallet")]
-        public async Task<IActionResult> TopUpWallet([FromBody] TopUpWithdrawRequest request)
+        public async Task<IActionResult> TopUpWallet([FromBody] TopUpWithdrawRequest request, CancellationToken ct)
         {
-            var response = await _walletService.TopUpToWalletAsync(request);
+            var response = await _walletService.TopUpToWalletAsync(request, ct);
 
             if (!response.IsSuccess)
                 return BadRequest(response);
@@ -28,9 +28,9 @@ namespace E_wallet.Api.Controllers
         }
 
         [HttpPost("WithdrawWallet")]
-        public async Task<IActionResult> WithdrawBankAccount([FromBody] TopUpWithdrawRequest request)
+        public async Task<IActionResult> WithdrawBankAccount([FromBody] TopUpWithdrawRequest request, CancellationToken ct)
         {
-            var response = await _walletService.WithdrawFromWalletAsync(request);
+            var response = await _walletService.WithdrawFromWalletAsync(request,ct);
 
             if (!response.IsSuccess)
                 return BadRequest(response);
@@ -40,9 +40,9 @@ namespace E_wallet.Api.Controllers
         }
 
         [HttpPost("TransferFromWallet")]
-        public async Task<IActionResult> TransferFromWallet([FromBody] TransferRequest request)
+        public async Task<IActionResult> TransferFromWallet([FromBody] TransferRequest request, CancellationToken ct)
         {
-            var response = await _walletService.TransferFromWalletAsync(request);
+            var response = await _walletService.TransferFromWalletAsync(request,ct);
 
             if (!response.IsSuccess)
                 return BadRequest(response);

@@ -54,7 +54,7 @@ namespace E_wallet.Application.Services
             user = await _unitOfWork.Users.AddAsync(user);
             //create default wallet on register
             Wallet wallet = WalletMapper.ToEntity(new WalletRequest { IsDefault = true, UserId = user.Id });
-            _unitOfWork.Wallets.CreateWallet(wallet);
+            _unitOfWork.Wallets.CreateWallet(wallet, ct);
             await _emailHelper.SendOtpEmailAsync(user.Email, user.OtpCode, "User");
             return UserMapper.toResponseRegister(user);
         }

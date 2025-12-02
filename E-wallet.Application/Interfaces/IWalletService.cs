@@ -22,6 +22,7 @@ namespace E_wallet.Application.Interfaces
         Task<WalletResponse> DeleteDefaultWalletById(int UserId, int PrimaryWalletId, int SecondaryWalletId, CancellationToken ct);
         Task<WalletResponse> DeleteWalletById(int WalletId, int UserId, CancellationToken ct);
         Task<WalletResponse> SetDefaultWallet(int WalletId,int UserId, CancellationToken ct);
+        Task<WalletResponse> GetUserDefaultWallet(int UserId, CancellationToken ct);
 
 
     }

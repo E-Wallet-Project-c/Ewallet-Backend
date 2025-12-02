@@ -424,9 +424,9 @@ namespace E_wallet.Application.Services
         #endregion
 
         #region GetUserDefaultWallet
-        public async Task<WalletResponse> GetUserDefaultWallet(int userId)
+        public async Task<WalletResponse> GetUserDefaultWallet(int userId, CancellationToken ct)
         {
-            var user = await _userRepository.GetByIdAsync(userId);
+            var user = await _userRepository.GetByIdAsync(userId,ct);
             if (user == null)
                 return null;
 
