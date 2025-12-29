@@ -17,10 +17,11 @@ namespace E_wallet.Infrastrucure.Repositories
         {
             _context = context;
         }
-        public Task AddAsync(Profile profile)
+        public Task<Profile> AddAsync(Profile profile)
         {
-             _context.Profiles.Add(profile);
-            return _context.SaveChangesAsync();
+             _context.Profiles.AddAsync(profile);
+             _context.SaveChangesAsync();
+            return Task.FromResult(profile);
         }
 
         public async Task<IEnumerable<Profile>> GetAllAsync()
@@ -37,7 +38,7 @@ namespace E_wallet.Infrastrucure.Repositories
 
         public Task UpdateAsync(Profile profile)
         {
-             _context.Profiles.Update(profile);
+            _context.Profiles.Update(profile);
             return _context.SaveChangesAsync();
 
         }
@@ -48,9 +49,18 @@ namespace E_wallet.Infrastrucure.Repositories
             //If no profile is found, it returns null
             return _context.Profiles
                 .Include(p => p.User)
-                    .ThenInclude(u => u.Wallets.Where(w => w.IsDefaultWallet)) 
+                    .ThenInclude(u => u.Wallets.Where(w => w.IsDefaultWallet))
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.UserId == userId);
         }
+
+        public Task<Profile?> GetByPhoneAsync(string phone,CancellationToken ct)
+        {
+            return _context.Profiles
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Phone == phone);
+        }
+
+
     }
 }

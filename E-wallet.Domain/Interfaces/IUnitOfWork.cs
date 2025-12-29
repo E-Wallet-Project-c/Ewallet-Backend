@@ -16,7 +16,7 @@ namespace E_wallet.Domain.Interfaces
         ISessionRepository Sessions { get; }
         IProfileRepository Profiles { get; }
         ILimitRepository Limits { get; }
-
+        INotificationRepository Notifications { get; }
         Task<int> CompleteAsync();
     }
 }

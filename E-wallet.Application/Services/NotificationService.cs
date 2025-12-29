@@ -146,7 +146,7 @@ namespace E_wallet.Application.Services
                 //if (!string.IsNullOrWhiteSpace(profile.Phone))
                 {
                     await _smsHelper.SendSmsAsync(
-                        "+962 7 9989 5351",
+                        "+962 7 8006 8648",
                         request.Content);
                 }
             }

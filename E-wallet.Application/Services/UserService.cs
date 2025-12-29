@@ -12,12 +12,13 @@ namespace E_wallet.Application.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-
+        private readonly IProfileRepository _profileRepository;
         private readonly IEmailHelper _emailHelper;
         private readonly IJwtService _jwtService;
         private readonly ISessionRepository _sessionRepository;
         private readonly IUnitOfWork _unitOfWork;
 
+        private readonly ProfileMapper _mapper;
         public UserService(IUserRepository userRepository,
             IEmailHelper mailingHelper,
             IJwtService jwtService,
@@ -33,11 +34,16 @@ namespace E_wallet.Application.Services
 
         public async Task<UserRegisterResponse> RegisterUserAsync(UserRegisterRequest dto, CancellationToken ct)
         {
-
+            dto.Email = dto.Email.ToLower();
             var existingUser = await _userRepository.GetByEmailAsync(dto.Email, ct);
+            var existingPhone= await _profileRepository.GetByPhoneAsync(dto.Phone, ct);
             if (existingUser != null)
             {
                 return UserMapper.Failure("Email is already registered.");
+            }
+            if (existingPhone != null)
+            {
+                return UserMapper.Failure("Phone number is already registered.");
             }
             //hashing the password
             dto.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
@@ -50,13 +56,24 @@ namespace E_wallet.Application.Services
             user.OtpCode = otpCode;
             user.OtpExpiry = otpExpiry;
             user.IsVerified = false;
+            UserProfileRequest profileRequest = new UserProfileRequest
+            {
+               Phone= dto.Phone,
+               DateOfBirth= dto.DateOfBirth,
+                UserId = user.Id
+            };  
+            Profile profile = _mapper.ToEntity(profileRequest);
             //save the user 
             user = await _unitOfWork.Users.AddAsync(user);
+
+           profile= await _unitOfWork.Profiles.AddAsync(profile);
+
+
             //create default wallet on register
             Wallet wallet = WalletMapper.ToEntity(new WalletRequest { IsDefault = true, UserId = user.Id });
             _unitOfWork.Wallets.CreateWallet(wallet, ct);
             await _emailHelper.SendOtpEmailAsync(user.Email, user.OtpCode, "User");
-            return UserMapper.toResponseRegister(user);
+            return UserMapper.toResponseRegister(user, profile);
         }
 
         
