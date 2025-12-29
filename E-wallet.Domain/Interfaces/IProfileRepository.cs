@@ -9,12 +9,12 @@ namespace E_wallet.Domain.Interfaces
 {
     public  interface  IProfileRepository
     {
-        Task AddAsync(Profile profile);
+        Task <Profile>AddAsync(Profile profile);
         Task <Profile?> GetByIdAsync(int id);
         Task UpdateAsync(Profile profile);
         Task<IEnumerable<Profile>> GetAllAsync();
         Task<Profile?> GetByUserIdAsync(int userId);
-
+        Task<Profile?> GetByPhoneAsync(string phone, CancellationToken ct);
 
     }
 }

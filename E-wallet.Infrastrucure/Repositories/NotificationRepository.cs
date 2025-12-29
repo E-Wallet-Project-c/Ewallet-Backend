@@ -20,9 +20,6 @@ namespace E_wallet.Infrastrucure.Repositories
             _Context = Context;
         }
 
-      
-
-
         public async Task<Notification?> AddNotification(Notification notification, CancellationToken ct)
         {
             notification.IsActive = true;

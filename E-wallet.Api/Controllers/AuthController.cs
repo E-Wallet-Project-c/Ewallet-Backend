@@ -131,34 +131,34 @@ namespace E_wallet.Api.Controllers
         [HttpPost("ForgetPassword/{Email}")]
         public async Task<IActionResult> Checkemail([FromRoute] ForgetPasswordEmailrequest dto, CancellationToken ct)
         {
-          
-            var v=await _userService.ForgetPasswordAsync(dto, ct);
-            if(v==null)
-                return BadRequest(new { message = "Email not found" });
-            return Ok(new { message = "OTP sent to your email" });
+            try
+            { 
+                var v = await _userService.ForgetPasswordAsync(dto, ct);
+                if (v == null)
+                    return BadRequest(new { message = "Email not found" });
+                return Ok(new { message = "OTP sent to your email" });
+            }
+            catch (Exception ex){
+
+                return StatusCode(500, $"{ex.Message}");
+            }
         }
 
 
         [HttpPost("ResetPassword")]
         public async Task<IActionResult> Reset([FromBody] NewPasswordrequest dto, CancellationToken ct)
         {
-            var result = await _userService.GenaratenewPasswordAsync(dto,ct);
-
-            if (!result.Success)
-            {
-                return BadRequest(new { message = result.Message });
-            }
-
-            return Ok(new { message = "Password has been reset successfully" });
             try
             {
-                return Ok(result);
+                var result = await _userService.GenaratenewPasswordAsync(dto, ct);
+                return Ok(new { message = "Password has been reset successfully" });
             }
-            catch (Exception)
-            {
+            catch (Exception ex) {
 
-                throw;
+
+                return StatusCode(500, $"{ex.Message}");
             }
+        
         }
             [HttpPost("verify-otp")]
             public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequest dto, CancellationToken ct)

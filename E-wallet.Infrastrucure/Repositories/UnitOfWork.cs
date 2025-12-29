@@ -15,7 +15,7 @@ namespace E_wallet.Infrastrucure.Repositories
         public ISessionRepository Sessions { get; private set; }
         public IProfileRepository Profiles { get; private set; }
         public ILimitRepository Limits { get; private set; }
-
+        public INotificationRepository Notifications { get; private set; }
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;

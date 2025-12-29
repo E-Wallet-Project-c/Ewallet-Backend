@@ -23,11 +23,12 @@ namespace E_wallet.Application.Mappers
             };
         }
 
-        public static UserRegisterResponse toResponseRegister(User entity)
+        public static UserRegisterResponse toResponseRegister(User entity )
         {
             return new UserRegisterResponse
             {
                 Id = entity.Id,
+                
                 FullName = entity.FullName,
                 Email = entity.Email,
                 //IsActive = entity.IsActive,
@@ -37,7 +38,24 @@ namespace E_wallet.Application.Mappers
 
             };
         }
+        public static UserRegisterResponse toResponseRegister(User entity, Profile profile)
+        {
+            return new UserRegisterResponse
+            {
+                Id = entity.Id,
+                ProfileId = profile.Id,
 
+                FullName = entity.FullName,
+                Email = entity.Email,
+                Phone = profile.Phone,
+                DateOfBirth = profile.DateOfBirth,
+                //IsActive = entity.IsActive,
+                CreatedAt = entity.CreatedAt,
+                UpdatedAt = entity.UpdatedAt
+
+
+            };
+        }
         public static UserRegisterResponse Failure(string message)
         {
             return new UserRegisterResponse
